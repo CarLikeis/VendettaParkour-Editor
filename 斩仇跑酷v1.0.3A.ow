@@ -256,8 +256,8 @@
 		// 全局.radius_fx = 地图工坊设置实数(自定义字符串("Radius Settings    ◆ 点位半径"), 自定义字符串("Radius fx                  ◆ 实际判断半径(推荐默认)"), 1.800, 1, 3, 0);
 		// 全局.radius_effect = 地图工坊设置实数(自定义字符串("Radius Settings    ◆ 点位半径"), 自定义字符串("Radius effect         ◆ 视觉效果半径(推荐默认)"), 1.400, 1, 3, 1);
 		// 全局.radius_effect = 全局.radius_fx - 0.4;
-		全局.EditorOn = 地图工坊设置开关(自定义字符串("Map Settings      ◆ 地图设置"), 自定义字符串("Editor Mode         ◆ 作图模式"), 真, 0);
-		全局.PortalOn = 地图工坊设置开关(自定义字符串("Map Settings      ◆ 地图设置"), 自定义字符串("Portals 󠀨Control Maps󠀩    ◆ 启用传送门 󠀨占点地图󠀩"), 真, 4);
+		全局.EditorOn = 地图工坊设置开关(自定义字符串("Map Settings      ◆ 地图设置"), 自定义字符串("Editor Mode          ◆ 作图模式"), 真, 0);
+		全局.PortalOn = 地图工坊设置开关(自定义字符串("Map Settings      ◆ 地图设置"), 自定义字符串("Portals 󠀨Control Maps󠀩    ◆ 启用传送门 󠀨占点地图󠀩"), 真, 3);
 
 		// 隐藏竞赛模式工坊设置
 
@@ -319,7 +319,7 @@
 		If(全局.ColorConfig[7] == 全局.ColorConfig[8]);
 			全局.ColorConfig[8] = 全局.ColorConfig[7] == 颜色(红色) ? 颜色(橙色) : 颜色(红色);
 		End;
-		全局.maprating[0] = 地图工坊设置开关(自定义字符串("Map Rating                         ◆ 地图评分"), 自定义字符串("Rating Enable                              ◆ 评分开关"), 真, 0);
+		全局.maprating[0] = 地图工坊设置开关(自定义字符串("Map Settings      ◆ 地图设置"), 自定义字符串("Rating Enable                                 ◆ 评分开关"), 真, 4);
 		全局.maprating[1] = 0;
 		全局.maprating[2] = 0;
 		全局.maprating[3] = 空数组;
