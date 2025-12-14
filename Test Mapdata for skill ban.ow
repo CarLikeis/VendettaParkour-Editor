@@ -1,0 +1,57 @@
+变量
+{
+	全局:
+		12: Dao
+		13: SHIFT
+		15: EditSelectIdArray
+		18: TQ
+		22: EditMode
+		23: TQ5
+		24: TQ6
+		25: BounceToggleLock
+		26: killballnumber
+		27: pinballnumber
+		30: maprating
+		32: LeaderBoardFull
+		45: CustomPortalStart
+		46: CustomPortalEndpoint
+		47: CustomPortalCP
+		73: Cachedcredits
+		85: BanDead
+		86: BanBhop
+		87: BanStand
+		88: BanPrimaryFire
+		100: Ability2
+		102: TQ7
+		105: UnlimitAbilities
+}
+
+动作
+{
+	全局.A = 数组(矢量(13.885, 0, -0.177), 矢量(5.337, 0, -5.254), 矢量(2.845, 0, -12.223), 矢量(9.894, 0, -13.646));
+	全局.H = 数组();
+	全局.I = 数组();
+	全局.Dao = 数组(0);
+	全局.SHIFT = 数组(2);
+	全局.EditSelectIdArray = 数组();
+	全局.TQ = 数组();
+	全局.EditMode = 数组();
+	全局.TQ5 = 数组();
+	全局.TQ6 = 数组();
+	全局.BounceToggleLock = 数组();
+	全局.killballnumber = 数组();
+	全局.pinballnumber = 数组();
+	全局.maprating = 数组(真, 0, 0, 数组());
+	全局.LeaderBoardFull = 数组();
+	全局.CustomPortalStart = 数组();
+	全局.CustomPortalEndpoint = 数组();
+	全局.CustomPortalCP = 数组();
+	全局.Cachedcredits = 数组(自定义字符串("QAQ"), 自定义字符串("code here - 代码"));
+	全局.BanDead = 数组();
+	全局.BanBhop = 数组();
+	全局.BanStand = 数组();
+	全局.BanPrimaryFire = 数组(1);
+	全局.Ability2 = 数组(1, 2);
+	全局.TQ7 = 数组();
+	全局.UnlimitAbilities = 数组();
+}

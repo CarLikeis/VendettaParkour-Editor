@@ -2,7 +2,7 @@
 {
 	主程序
 	{
-		描述: "▶ 斩仇跑酷编辑器 v1.0.3D\r\n\r\n代码: J4GF6\r\n维护: 十六 , 芒果鲨\r\n\r\n斩仇跑酷交流群：614016408"
+		描述: "▶ 斩仇跑酷编辑器 v1.0.3E\r\n\r\n代码: J4GF6\r\n维护: 十六 , 芒果鲨\r\n\r\n斩仇跑酷交流群：614016408"
 		模式名称: "Vendetta Parkour - 斩仇跑酷"
 	}
 	大厅
@@ -128,7 +128,7 @@
 		85: BanDead
 		86: BanBhop
 		87: BanStand
-		88: BanMelee
+		88: BanPrimaryFire
 		91: MapVectorArray
 		100: Ability2
 		102: TQ7
@@ -155,7 +155,7 @@
 		19: skill_usedHop
 		20: skill_usedBhop
 		25: banString
-		29: ban_melee
+		29: ban_primaryfire
 		30: ban_dead
 		31: ban_bhop
 		32: ban_standcreate
@@ -225,7 +225,7 @@
 	}
 }
 
-规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.3D ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.3E ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
 {
 	事件
 	{
@@ -302,7 +302,7 @@
 		全局.BanDead = 数量(全局.BanDead) ? 已过滤的数组(全局.BanDead, 当前数组元素 + 假 >= 空) : 空数组;
 		全局.BanBhop = 数量(全局.BanBhop) ? 已过滤的数组(全局.BanBhop, 当前数组元素 + 假 >= 空) : 空数组;
 		全局.BanStand = 数量(全局.BanStand) ? 已过滤的数组(全局.BanStand, 当前数组元素 + 假 >= 空) : 空数组;
-		全局.BanMelee = 数量(全局.BanMelee) ? 已过滤的数组(全局.BanMelee, 当前数组元素 + 假 >= 空) : 空数组;
+		全局.BanPrimaryFire = 数量(全局.BanPrimaryFire) ? 已过滤的数组(全局.BanPrimaryFire, 当前数组元素 + 假 >= 空) : 空数组;
 		"LeaderBoard = []"
 		全局.LeaderBoardFull = 空数组;
 		"fix team because of naming"
@@ -534,6 +534,21 @@
 				调用子程序(ResetAbilities);
 				调用子程序(AddonCustomLoadAndReset);
 			End;
+			If(事件玩家.checkpoint_notLast);
+				根据条件跳过(!事件玩家.cache_startUlt, 真);
+				小字体信息(事件玩家, 自定义字符串("   {0} {1} ", 技能图标字符串(英雄(斩仇), 按钮(终极技能)), 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("终极技能已就绪") : 自定义字符串(
+						"Ultimate Is Ready")));
+				根据条件跳过(!事件玩家.cache_startAbility1, 真);
+				小字体信息(事件玩家, 自定义字符串("   {0} {1} ", 技能图标字符串(英雄(斩仇), 按钮(技能1)), 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("技能1已就绪") : 自定义字符串(
+						"Ability 1 Is Ready")));
+				根据条件跳过(!事件玩家.cache_startAbility2, 真);
+				小字体信息(事件玩家, 自定义字符串("   {0} {1} ", 技能图标字符串(英雄(斩仇), 按钮(技能2)), 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("技能2已就绪") : 自定义字符串(
+						"Ability 2 Is Ready")));
+				根据条件跳过(!事件玩家.ban_primaryfire, 真);
+				"用源氏E技能图标代表左键"
+				小字体信息(事件玩家, 自定义字符串("   {0} {1} ", 技能图标字符串(英雄(源氏), 按钮(技能2)), 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("主要攻击已禁用") : 自定义字符串(
+						"Primary Fire Is Baned")));
+			End;
 			等待(假, 无视条件);
 			播放效果(事件玩家, 环状爆炸声音, 空, 事件玩家, 100);
 			播放效果(全局.CompMode || 事件玩家.toggle_invisible ? 事件玩家 : 真, 环状爆炸, 颜色(天蓝色), 所选位置(事件玩家), 4);
@@ -741,16 +756,16 @@
 				"↓ × ♂"
 				事件玩家.banString = 自定义字符串("↓ {0}", 事件玩家.banString);
 			End;
-			事件玩家.ban_melee = 地图工坊设置开关(自定义字符串("Ban (All Levels)             ◆ 封禁(应用于所有关卡)"), 自定义字符串("Ban Melee                         ◆ 封禁近身攻击"), 假, 3)
-				|| 数组包含(全局.BanMelee, 事件玩家.checkpoint_current);
-			If(事件玩家.ban_melee);
+			事件玩家.ban_primaryfire = 地图工坊设置开关(自定义字符串("Ban (All Levels)             ◆ 封禁(应用于所有关卡)"), 自定义字符串("Ban Primary Fire         ◆ 封禁主要攻击"), 假, 3)
+				|| 数组包含(全局.BanPrimaryFire, 事件玩家.checkpoint_current);
+			If(事件玩家.ban_primaryfire);
 				"» ↓ × ♂"
 				事件玩家.banString = 自定义字符串("» {0}", 事件玩家.banString);
 			End;
 		Else;
 			事件玩家.ban_standcreate = 假;
 			事件玩家.ban_bhop = 假;
-			事件玩家.ban_melee = 假;
+			事件玩家.ban_primaryfire = 假;
 			事件玩家.ban_dead = 假;
 		End;
 		等待(假, 无视条件);
@@ -943,6 +958,18 @@
 			等待直到 (游戏正在进行中, 999999995904.000);
 			调用子程序(TimerResume);
 		End;
+		根据条件跳过(!事件玩家.cache_startUlt, 真);
+		小字体信息(事件玩家, 自定义字符串("   {0} {1} ", 技能图标字符串(英雄(斩仇), 按钮(终极技能)), 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("终极技能已就绪") : 自定义字符串(
+				"Ultimate Is Ready")));
+		根据条件跳过(!事件玩家.cache_startAbility1, 真);
+		小字体信息(事件玩家, 自定义字符串("   {0} {1} ", 技能图标字符串(英雄(斩仇), 按钮(终极技能)), 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("技能1已就绪") : 自定义字符串(
+				"Ability 1 Is Ready")));
+		根据条件跳过(!事件玩家.cache_startAbility2, 真);
+		小字体信息(事件玩家, 自定义字符串("   {0} {1} ", 技能图标字符串(英雄(斩仇), 按钮(终极技能)), 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("技能2已就绪") : 自定义字符串(
+				"Ability 2 Is Ready")));
+		根据条件跳过(!事件玩家.ban_primaryfire, 真);
+		小字体信息(事件玩家, 自定义字符串("   {0} {1} ", 技能图标字符串(英雄(斩仇), 按钮(终极技能)), 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("主要攻击已封禁") : 自定义字符串(
+				"Primary Fire Is Ready")));
 	}
 }
 
@@ -1086,7 +1113,7 @@
 			设置启用终极技能(事件玩家, 事件玩家.cache_startUlt);
 			设置启用技能 1(事件玩家, 事件玩家.cache_startAbility1);
 			设置启用技能 2(事件玩家, 事件玩家.cache_startAbility2);
-			设置启用近战攻击(事件玩家, !事件玩家.ban_melee);
+			设置主要攻击模式启用(事件玩家, !事件玩家.ban_primaryfire);
 			设置技能冷却(事件玩家, 按钮(技能1), 0);
 			设置技能冷却(事件玩家, 按钮(技能2), 0);
 			设置技能冷却(事件玩家, 按钮(辅助攻击模式), 0);
@@ -1230,7 +1257,8 @@
 	{
 		根据条件跳过(事件玩家.toggle_invincible || !事件玩家.checkpoint_notLast, 真);
 		设置启用技能 1(事件玩家, 假);
-		等待直到(按钮被按下(事件玩家, 按钮(辅助攻击模式)), 真);
+		"测试斩仇shift新版本为0.496, 随便用0.5糊弄过去了^^ "
+		等待直到(按钮被按下(事件玩家, 按钮(辅助攻击模式)), 0.5);
 		根据条件中止(!按钮被按下(事件玩家, 按钮(辅助攻击模式)));
 		取消主要动作(事件玩家);
 	}
@@ -1413,7 +1441,7 @@
 				按钮(技能2))), 自定义字符串("{0} + {1} | 增大击杀球\n{0} + {2} | 缩小击杀球", 输入绑定字符串(按钮(技能2)), 输入绑定字符串(按钮(跳跃)), 输入绑定字符串(按钮(蹲下))), 自定义字符串(
 				"{0} + {1} | 增加弹球弹力\n{0} + {2} | 减少弹球弹力", 输入绑定字符串(按钮(技能2)), 输入绑定字符串(按钮(跳跃)), 输入绑定字符串(按钮(蹲下))), 
 				自定义字符串(
-				"{0} + {2} | 近身攻击\n{0} + {1} | 死亡E", 输入绑定字符串(按钮(互动)), 输入绑定字符串(按钮(蹲下)),输入绑定字符串(按钮(跳跃))), 自定义字符串(
+				"{0} + {2} | 主要攻击\n{0} + {1} | 死亡E", 输入绑定字符串(按钮(互动)), 输入绑定字符串(按钮(蹲下)),输入绑定字符串(按钮(跳跃))), 自定义字符串(
 				"{0} + {1} | 移动选中的实体\n{0} + {2} | 应用到当前/所有关卡(开关)", 输入绑定字符串(按钮(技能2)), 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(跳跃))))
 				[主机玩家.editor_modeSelect] : 
 			// "lang en"
@@ -1421,7 +1449,7 @@
 				"{0} + {1} | Increase Size\n{0} + {2} | Decrease Size", 输入绑定字符串(按钮(技能2)), 输入绑定字符串(按钮(跳跃)), 输入绑定字符串(按钮(蹲下))), 自定义字符串(
 				"{0} + {1} | Increase Strength\n{0} + {2} | Decrease Strength", 输入绑定字符串(按钮(技能2)), 输入绑定字符串(按钮(跳跃)), 输入绑定字符串(按钮(蹲下))), 
 				自定义字符串(
-				"{0} + {2} | Melee Ataack\n{0} + {1} | Death Ability2", 输入绑定字符串(按钮(互动)), 输入绑定字符串(按钮(蹲下)),输入绑定字符串(按钮(跳跃))), 自定义字符串(
+				"{0} + {2} | Primary Fire\n{0} + {1} | Death Ability2", 输入绑定字符串(按钮(互动)), 输入绑定字符串(按钮(蹲下)),输入绑定字符串(按钮(跳跃))), 自定义字符串(
 				"{0} + {1} | Move\n{0} + {2} | Cp/Map (Toggle)", 输入绑定字符串(按钮(技能2)), 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(跳跃))))
 				[主机玩家.editor_modeSelect], 右边, -145, 空, 空, 颜色(黄色), 可见和字符串, 默认可见度);
 
@@ -1529,7 +1557,7 @@
 					
 				自定义字符串(
 				"\n 封禁(单关)\n――――――――――――\n {0} 卡小跳 ×\n {1} 留小跳进点 ↓\n{2}\n――――――――――――\n", 数组包含(全局.BanStand, 主机玩家.checkpoint_current) ? 自定义字符串("√")
-				: 空数组, 数组包含(全局.BanBhop, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组,自定义字符串(" {0} 死亡E ♂\n {1} 近身攻击 »",数组包含(全局.BanDead, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组, 数组包含(全局.BanMelee, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组))
+				: 空数组, 数组包含(全局.BanBhop, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组,自定义字符串(" {0} 死亡E ♂\n {1} 主要攻击 »",数组包含(全局.BanDead, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组, 数组包含(全局.BanPrimaryFire, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组))
 				
 				: (主机玩家.editor_modeSelect == 4 && 数组包含(数组(
 				主机玩家.checkpoint_current, -1), 全局.CustomPortalCP[全局.EditSelected]) && 数量(全局.CustomPortalCP) ? 自定义字符串(
@@ -1545,7 +1573,7 @@
 
 				自定义字符串(
 				"\n 封禁(单关)\n――――――――――――\n {0} 卡小跳 ×\n {1} 留小跳进点 ↓\n{2}\n――――――――――――\n", 数组包含(全局.BanStand, 主机玩家.checkpoint_current) ? 自定义字符串("√")
-				: 空数组, 数组包含(全局.BanBhop, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组,自定义字符串(" {0} 死亡E ♂\n {1} 近身攻击 »",数组包含(全局.BanDead, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组, 数组包含(全局.BanMelee, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组))
+				: 空数组, 数组包含(全局.BanBhop, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组,自定义字符串(" {0} 死亡E ♂\n {1} 主要攻击 »",数组包含(全局.BanDead, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组, 数组包含(全局.BanPrimaryFire, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组))
 
 				
 				: (主机玩家.editor_modeSelect == 4 && 数组包含(数组(主机玩家.checkpoint_current, -1), 全局.CustomPortalCP[全局.EditSelected]) && 数量(
@@ -1735,7 +1763,7 @@
 					全局.SHIFT = 映射的数组(全局.SHIFT, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.Ability2 = 映射的数组(全局.Ability2, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.UnlimitAbilities = 映射的数组(全局.UnlimitAbilities, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
-					全局.BanMelee = 映射的数组(全局.BanMelee, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+					全局.BanPrimaryFire = 映射的数组(全局.BanPrimaryFire, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.BanDead = 映射的数组(全局.BanDead, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.BanStand = 映射的数组(全局.BanStand, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.BanBhop = 映射的数组(全局.BanBhop, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
@@ -1890,8 +1918,8 @@
 			全局.Ability2 = 映射的数组(全局.Ability2, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 			修改全局变量(UnlimitAbilities, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.UnlimitAbilities = 映射的数组(全局.UnlimitAbilities, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
-			修改全局变量(BanMelee, 根据值从数组中移除, 主机玩家.checkpoint_current);
-			全局.BanMelee = 映射的数组(全局.BanMelee, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+			修改全局变量(BanPrimaryFire, 根据值从数组中移除, 主机玩家.checkpoint_current);
+			全局.BanPrimaryFire = 映射的数组(全局.BanPrimaryFire, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 
 			修改全局变量(BanStand, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.BanStand = 映射的数组(全局.BanStand, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
@@ -2275,10 +2303,10 @@
 					修改全局变量(BanDead, 添加至数组, 主机玩家.checkpoint_current);
 				End;
 			Else;
-				If(数组包含(全局.BanMelee, 主机玩家.checkpoint_current));
-					修改全局变量(BanMelee, 根据值从数组中移除, 主机玩家.checkpoint_current);
+				If(数组包含(全局.BanPrimaryFire, 主机玩家.checkpoint_current));
+					修改全局变量(BanPrimaryFire, 根据值从数组中移除, 主机玩家.checkpoint_current);
 				Else;
-					修改全局变量(BanMelee, 添加至数组, 主机玩家.checkpoint_current);
+					修改全局变量(BanPrimaryFire, 添加至数组, 主机玩家.checkpoint_current);
 				End;
 			End;
 		End;
@@ -3069,8 +3097,8 @@
 			白色), 空, 空, 可见和字符串, 默认可见度);
 		End;
 		"global huds"
-		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.3D{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
-			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.3D{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.3E{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.3E{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
 			"\nError: Max HUD Count Reached") : 空数组), 空, 右边, -162, 空, 全局.ColorConfig[2], 空, 可见和字符串, 始终可见);
 		"padding for custom hud display"
 		创建HUD文本(首个(真), 空, 空, 自定义字符串("­\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"), 顶部,

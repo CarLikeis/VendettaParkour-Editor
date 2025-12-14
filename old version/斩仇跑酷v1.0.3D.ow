@@ -2857,6 +2857,7 @@
 			If(事件玩家.editor_fly);
 				事件玩家.editor_fly = 最后(全局.A[事件玩家.checkpoint_current]);
 			End;
+			根据条件跳过(按钮被按下(事件玩家, 按钮(互动)) && 全局.EditorOn, 真);
 			调用子程序(CheckpointFailReset);
 			等待(0.320, 无视条件);
 		End;
