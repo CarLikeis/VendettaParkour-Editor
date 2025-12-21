@@ -593,7 +593,7 @@
 			事件玩家.pioneer_countability2 += 1;
 		"$$ Doomfist & Vendetta Unlimit lvl"
 		Else;
-			等待直到(!正在使用技能 2(事件玩家), 0.3);
+			等待直到(!正在使用技能 2(事件玩家), 0.5);
 			设置启用技能 2(事件玩家, (事件玩家.count_ability2 > 1 ? 真 : 假));
 			根据条件中止(在地面上(事件玩家));
 			事件玩家.count_ability2 -= 1;
@@ -698,7 +698,6 @@
 	{
 		在地面上(事件玩家) == 真;
 		技能冷却时间(事件玩家, 按钮(技能1)) + 技能冷却时间(事件玩家, 按钮(技能2)) + 技能冷却时间(事件玩家, 按钮(辅助攻击模式)) > 0.200;
-		事件玩家.toggle_invincible == 真;
 	}
 
 	动作
@@ -815,7 +814,7 @@
 	{
 		根据条件跳过(事件玩家.toggle_edit, 11);
 
-		等待(2, 当为“假”时中止);
+		等待(真, 当为“假”时中止);
 		事件玩家.toggle_invincible = 假;
 		播放效果(事件玩家, 负面状态施加声音, 空, 事件玩家, 100);
 		大字体信息(事件玩家, 自定义字符串("开拓者模式"));
@@ -832,7 +831,7 @@
 		根据条件跳过(正在使用技能 2(事件玩家), 真);
 		事件玩家.pioneer_countability2 = 空;
 		事件玩家.pioneer_countultimate = 空;
-		调用子程序(ResetAbilities);
+		调用子程序(CheckpointFailReset);
 		等待直到((在地面上(事件玩家) && 相距距离(事件玩家, 全局.A[事件玩家.checkpoint_current])>1.8 && !正在使用技能 2(事件玩家)) || !事件玩家.toggle_edit, 99999);
 		全局.Pos_View = 所选位置(事件玩家);
 		开始强制设置玩家位置(事件玩家, 全局.Pos_View, 假);
@@ -884,6 +883,29 @@
 	动作
 	{
 		事件玩家.toggle_edit = 假;
+	}
+}
+
+规则("Pioneer | Creating New CP But Outside Original CP")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		事件玩家.toggle_guide == 真;
+		在地面上(事件玩家) == 真;
+		全局.Pos_View == 空;
+		相距距离(事件玩家, 全局.A[事件玩家.checkpoint_current]) > 1.8;
+	}
+
+	动作
+	{
+		调用子程序(CheckpointFailReset);
 	}
 }
 
