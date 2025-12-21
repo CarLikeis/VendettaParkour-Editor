@@ -1,0 +1,1432 @@
+设置
+{
+	主程序
+	{
+		描述: "▶ 斩仇跑酷开拓 - Pioneer\r\n\r\n代码: 15793\r\n\r\n斩仇跑酷交流群：614016408\r\n\r\n互动 + 换弹 + 近战 导出地图数据"
+		模式名称: "斩仇跑酷开拓 - Pioneer"
+	}
+	大厅
+	{
+		比赛结束后转换队伍: 否
+		玩家上限 队伍1: 10
+		玩家上限 队伍2: 0
+		观战者人数上限: 12
+		返回大厅: 从不
+		队列中的玩家可以加入: 是
+	}
+	模式
+	{
+		团队死斗
+		{
+			启用地图
+			{
+			}
+			主动复生: 关闭
+		}
+		突击模式
+		{
+			启用地图
+			{
+				地图工坊室内
+			}
+		}
+		综合
+		{
+			允许切换英雄: 关闭
+			启用威能: 关闭
+			复生时间: 0%
+			急救包刷新: 禁用
+			敌方生命条: 关闭
+			消灭提示: 关闭
+			游戏模式开始: 即时
+			英雄限制: 关闭
+			阵亡镜头: 关闭
+			随机英雄复生: 开启
+		}
+	}
+	英雄
+	{
+		综合
+		{
+			斩仇
+			{
+				招架姿态恢复倍率: 500%
+				旋风疾步冷却时间: 65%
+				飞空斩击冷却时间: 65%
+			}
+			
+			启用英雄
+			{
+				斩仇
+			}
+		}
+	}
+	扩展
+	{
+		// 播放更多效果
+		// 爆炸声音
+	}
+}
+
+变量
+{
+	全局:
+		//存点位
+		0: A
+		2: BanBhop
+		3: BanStand
+		4: Count_Ability1
+		5: Count_Ability2
+		6: Count_Ultimate
+		7: EditorOn
+		8: MapVectorArray
+		9: PortalLoc
+		10: PortalDest
+		11: PortalNames
+		12: NANBA
+		13: SaveEnt
+		14: SaveName
+		15: SaveCp
+		16: TimeRemaining
+		17: Toggle_Update
+		18: Pos_View
+		19: Edit_Timer
+		20: Edit_Time
+		
+		
+
+	玩家:
+		0: checkpoint_current
+		1: checkpoint_practice
+		3: checkpoint_notLast
+		4: toggle_invincible
+		5: toggle_spectate
+		6: toggle_edit
+		7: toggle_practice
+		8: toggle_invisible
+		9: toggle_guide
+		10: toggle_quickRestart
+		13: count_ability1
+		14: count_ability2
+		15: count_ultimate
+		16: ban_string
+		17: ban_bhop
+		18: ban_standcreate
+		21: skill_countBhops
+		22: skill_usedHop
+		23: skill_usedBhop
+		24: skill_usingshift
+		25: cache_startAbility1
+		26: cache_startAbility2
+		27: cache_startUlt
+		28: pioneer_bhop
+		29: pioneer_countbhops
+		31: pioneer_countability1
+		32: pioneer_countability2
+		33: pioneer_countultimate
+		40: lockstate
+	
+}
+
+子程序
+{
+	0: CheckpointFailReset
+	1: UpdateCache
+	2: ResetAbilities
+}
+规则("Disable inspector")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+
+	动作
+	{
+		禁用查看器录制;
+	}
+}
+
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.0A ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+}
+
+规则("Parkour | Setup Variables")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+
+	动作
+	{
+		全局.A = 空数组;
+		全局.BanBhop = 空数组;
+		全局.BanStand = 空数组;
+		全局.Count_Ability1 = 空数组;
+		全局.Count_Ability2 = 空数组;
+		全局.Count_Ultimate = 空数组;
+		全局.EditorOn = 空;
+		全局.SaveName = 空数组;
+		全局.SaveCp = 空数组;
+		全局.Edit_Timer = 空;
+		全局.Toggle_Update = 假;
+		全局.Pos_View = 空;
+		创建效果((全局.Pos_View != 空 ? 本地玩家.toggle_edit : 空), 环, 颜色(灰绿色), 全局.Pos_View, 1.4, 可见，位置和半径);
+		全局.Edit_Time = 地图工坊设置整数(自定义字符串("Mode Setting - 模式设置"), 自定义字符串("开拓时间限制"), 180, 30, 300, 0);
+	}
+}
+
+规则("Parkour | Match time")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+
+	动作
+	{
+		If(当前游戏模式 != 游戏模式(突击模式));
+			等待(假, 无视条件);
+			设置比赛时间(假);
+			等待(假, 无视条件);
+			设置比赛时间(假);
+			等待(假, 无视条件);
+		End;
+		设置比赛时间(70);
+		比赛时间暂停;
+		等待(假, 无视条件);
+		全局.TimeRemaining = 265;
+		While(全局.TimeRemaining);
+			等待(60, 无视条件);
+			全局.TimeRemaining -= 真;
+		End;
+		大字体信息(首个(真), 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间已达最大持续时间, 即将重启") : 自定义字符串("Maximum Lobby Time Reached, Restarting"));
+		等待(5, 无视条件);
+		"Prevent crash during POTG and closing lobby"
+		宣告玩家胜利(主机玩家);
+		宣告队伍胜利(所在队伍(主机玩家));
+	}
+}
+
+规则("Parkour | Player Initialize")
+{
+	事件
+	{
+		玩家加入比赛;
+		双方;
+		全部;
+	}
+
+	动作
+	{
+		隐藏游戏模式HUD(事件玩家);
+		隐藏姓名板(所有玩家(所有队伍), 所有玩家(所有队伍));
+		取消与玩家的移动碰撞(事件玩家);
+		设置受到伤害(事件玩家, 0);
+		对所有玩家启用死亡回放(事件玩家);
+		启用死亡回放时目标的HUD(事件玩家);
+		关闭游戏预设复生模式(事件玩家);
+		"Preload Hero - Vendetta"
+		预加载英雄(事件玩家, 英雄(斩仇));
+		事件玩家.toggle_guide = 真;
+		"eventPlayer.toggle_quickRestart = true"
+		"big waits first for about 1 second before loading, to make sure things like comp mode are fully loaded and configured, load fx in meanwhile"
+		等待(真, 无视条件);
+		创建效果(事件玩家, 环, 颜色(天蓝色), 最后(全局.A[事件玩家.checkpoint_current]), 1.4, 位置和半径);
+		创建效果(事件玩家.checkpoint_notLast ? 事件玩家 : 空, 环, 颜色(灰绿色), 全局.A[事件玩家.checkpoint_current + 真], 1.4, 可见，位置和半径);
+		创建效果(事件玩家.checkpoint_notLast ? 事件玩家 : 空, 光柱, 颜色(白色), 全局.A[事件玩家.checkpoint_current + 真], 1.4, 可见，位置和半径);
+		创建图标(事件玩家.checkpoint_notLast ? 事件玩家 : 空, 全局.A[事件玩家.checkpoint_current + 真] + 上, 箭头：向下, 可见和位置, 颜色(天蓝色), 真);
+		等待直到 (已重生(事件玩家), 999999995904.000);
+		等待(假, 无视条件);
+		设置状态(事件玩家, 空, 无敌, 99999);
+		事件玩家.toggle_invisible = 真;
+		设置不可见(事件玩家, 全部);
+		事件玩家.checkpoint_practice = 空;
+		事件玩家.toggle_practice = 假;
+		事件玩家.toggle_invincible = 假;
+		事件玩家.toggle_spectate = 假;
+		If(数组包含(全局.SaveName, 字符串分割(首个(事件玩家), 空数组)));
+			全局.SaveEnt[数组值的索引(全局.SaveName, 字符串分割(首个(事件玩家), 空数组))] = 事件玩家;
+			事件玩家.checkpoint_current = 全局.SaveCp[数组值的索引(全局.SaveEnt, 事件玩家)];
+			调用子程序(UpdateCache);
+			调用子程序(CheckpointFailReset);
+		Else;
+			事件玩家.checkpoint_current = 0;
+			调用子程序(UpdateCache);
+			调用子程序(CheckpointFailReset);
+	}
+}
+
+规则("Parkour | Ground: Arrive & Reset")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		在地面上(事件玩家) == 真;
+		存活(事件玩家) == 真;
+		事件玩家.lockstate != 真;
+		事件玩家.toggle_edit != 真;
+	}
+
+	动作
+	{
+		If(!事件玩家.checkpoint_notLast && !事件玩家.toggle_edit);
+		"or eventPlayer.lockState:"
+		Else If(事件玩家.toggle_invincible || 事件玩家.toggle_spectate);
+		Else If(相距距离(事件玩家, 全局.A[事件玩家.checkpoint_current + 真]) <= 1.8 && !事件玩家.toggle_edit);
+			"arrived ----------------------------------------------------------------------------------------------------"
+			If(事件玩家.ban_bhop && 事件玩家.skill_usedBhop);
+				小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   ↓ 留小跳进点!") : 自定义字符串("   ↓ Must Have A Bhop To Complete!"));
+				调用子程序(CheckpointFailReset);
+			Else;
+				事件玩家.checkpoint_current += 真;
+				调用子程序(UpdateCache);
+				调用子程序(ResetAbilities);
+				等待(假, 无视条件);
+				播放效果(事件玩家, 环状爆炸声音, 空, 事件玩家, 100);
+				播放效果(事件玩家.toggle_invisible ? 事件玩家 : 真, 环状爆炸, 颜色(天蓝色), 所选位置(事件玩家), 4);
+			End;
+		Else If((相距距离(事件玩家, 全局.A[事件玩家.checkpoint_current]) > 1.8) && !事件玩家.skill_usingshift);
+			调用子程序(CheckpointFailReset);
+		End;
+		等待(0.048, 无视条件);
+		如条件为“真”则循环;
+	}
+}
+
+规则("Parkour | Death Reset")
+{
+	事件
+	{
+		玩家阵亡;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		是否是机器人(事件玩家) == 假;
+		死亡(事件玩家) == 真;
+		事件玩家.toggle_spectate == 假;
+	}
+
+	动作
+	{
+		If(数量(全局.A));
+			复活(事件玩家);
+		Else;
+			复生(事件玩家);
+		End;
+		调用子程序(CheckpointFailReset);
+		"rest is to prevent dead spamming from crashing server\nbut doing waits only when needed without relying on a variable count"
+		等待直到 (存活(事件玩家), 真);
+		等待直到 (死亡(事件玩家), 真);
+		如条件为“假”则中止;
+		等待(0.160, 无视条件);
+		复活(事件玩家);
+		调用子程序(CheckpointFailReset);
+		等待直到 (存活(事件玩家), 真);
+		等待直到 (死亡(事件玩家), 真);
+		如条件为“假”则中止;
+		等待(0.440, 无视条件);
+		复活(事件玩家);
+		调用子程序(CheckpointFailReset);
+		等待直到 (存活(事件玩家), 真);
+		等待直到 (死亡(事件玩家), 真);
+		如条件为“假”则中止;
+		等待(真, 无视条件);
+		复生(事件玩家);
+		调用子程序(CheckpointFailReset);
+	}
+}
+
+规则("Parkour | SUB Checkpoint Fail")
+{
+	事件
+	{
+		子程序;
+		CheckpointFailReset;
+	}
+
+	动作
+	{
+		"Vendetta Using Ability 2"
+		根据条件跳过(正在使用技能 2(事件玩家), 真);
+		取消主要动作(事件玩家);
+		If(数量(全局.A));
+			传送(事件玩家, 全局.A[事件玩家.checkpoint_current]);
+			"After teleport incase stopForcingPosition launches the player"
+			施加推力(事件玩家, -1 * 速率(事件玩家), 1, 至地图, 取消相反运动XYZ);
+			"old: disallow jump > 0.1 sec wait > allow jump, this method bugs with ult check disabling ultimate for some reason\nif eventPlayer.ban_dead or eventPlayer.ban_emote and eventPlayer.isHoldingButton(Button.JUMP):Reset Hop"
+		End;
+		调用子程序(ResetAbilities);
+	}
+}
+
+规则("Parkout | SUB Update Effect Cache")
+{
+	事件
+	{
+		子程序;
+		UpdateCache;
+	}
+
+	动作
+	{
+		事件玩家.checkpoint_notLast = 事件玩家.checkpoint_current < (数量(全局.A) - 真);
+
+		事件玩家.count_ultimate = 全局.Count_Ultimate[事件玩家.checkpoint_current];
+		事件玩家.count_ability1 = 全局.Count_Ability1[事件玩家.checkpoint_current];
+		事件玩家.count_ability2 = 全局.Count_Ability2[事件玩家.checkpoint_current];
+
+		事件玩家.cache_startUlt = (事件玩家.count_ultimate > 0 ? 真 : 假);
+		事件玩家.cache_startAbility1 = (事件玩家.count_ability1 > 0 ? 真 : 假);
+		事件玩家.cache_startAbility2 = (事件玩家.count_ability2 > 0 ? 真 : 假);
+		事件玩家.ban_string = 空数组;
+		If(事件玩家.checkpoint_notLast);
+			事件玩家.ban_standcreate = 数组包含(全局.BanStand, 事件玩家.checkpoint_current);
+			If(事件玩家.ban_standcreate);
+				"×"
+				事件玩家.ban_string = 自定义字符串("×");
+			End;
+			事件玩家.ban_bhop = 数组包含(全局.BanBhop, 事件玩家.checkpoint_current);
+			If(事件玩家.ban_bhop);
+				"↓ ×"
+				事件玩家.ban_string = 自定义字符串("↓ {0}", 事件玩家.ban_string);
+			End;
+		Else;
+			事件玩家.ban_standcreate = 假;
+			事件玩家.ban_bhop = 假;
+		End;
+	}
+}
+
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Mechanics | Checks ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+}
+
+规则("Mechanic | Jump")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		正在跳跃(事件玩家) == 真;
+	}
+
+	动作
+	{
+		事件玩家.skill_usedBhop = 真;
+		If(事件玩家.skill_usedHop);
+			小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   小跳") : 自定义字符串("   Bhop"));
+		Else;
+			事件玩家.skill_usedHop = 真;
+	}
+}
+
+规则("Mechanic | No Jump to Air")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		事件玩家.skill_usedHop == 空;
+		在地面上(事件玩家) == 假;
+	}
+
+	动作
+	{
+		事件玩家.skill_usedHop = 真;
+	}
+}
+
+规则("Mechanic | Bhop Reset")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		在地面上(事件玩家) == 真;
+		按钮被按下(事件玩家, 按钮(跳跃)) == 假;
+	}
+
+	动作
+	{
+		事件玩家.pioneer_bhop = 事件玩家.skill_usedBhop;
+		事件玩家.skill_usedBhop = 假;
+	}
+}
+
+规则("Mechanic | Reset On Ground")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		在地面上(事件玩家) == 真;
+	}
+
+	动作
+	{
+		"All"
+		事件玩家.pioneer_countbhops = 事件玩家.skill_countBhops;
+		事件玩家.skill_usedHop = 空;
+		事件玩家.skill_countBhops = 空;
+	}
+}
+
+规则("Mechanic | Bhop count for stand ban")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		正在跳跃(事件玩家) == 真;
+		事件玩家.ban_standcreate != 假;
+	}
+
+	动作
+	{
+		事件玩家.skill_countBhops += 真;
+		If(事件玩家.skill_countBhops > 1 && !事件玩家.toggle_invincible && !事件玩家.toggle_edit);
+			小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   卡小 × 已禁用!") : 自定义字符串("   Stand CreateBhop × Is Banned!"));
+			调用子程序(CheckpointFailReset);
+	}
+}
+
+规则("Mechanic | Ability 1")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		事件玩家.skill_usingshift == 真;
+	}
+
+	动作
+	{
+		"Hazard Ability 1 Reset Wall Climb"
+		If(事件玩家.toggle_invincible || !事件玩家.checkpoint_notLast || 事件玩家.toggle_edit);
+			设置启用技能 1(事件玩家, 真);
+			根据条件跳过(事件玩家.toggle_edit, 2);
+			等待直到 (!事件玩家.skill_usingshift, 0.5);
+			设置技能冷却(事件玩家, 按钮(技能1), 0);
+			根据条件跳过(!事件玩家.toggle_edit, 真);
+			事件玩家.pioneer_countability1 += 1;
+		"$$ Doomfist & Vendetta Unlimit lvl"
+		Else;
+			等待直到 (!事件玩家.skill_usingshift, 0.5);
+			设置启用技能 1(事件玩家, (事件玩家.count_ability1 > 1 ? 真 : 假));
+			根据条件中止(在地面上(事件玩家));
+			事件玩家.count_ability1 -= 1;
+	}
+}
+
+规则("Mechanic | Ability 2")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		正在使用技能 2(事件玩家) == 真;
+	}
+
+	动作
+	{
+		"Hazard Ability 1 Reset Wall Climb"
+		If(事件玩家.toggle_invincible || 事件玩家.toggle_edit || !事件玩家.checkpoint_notLast);
+			设置启用技能 2(事件玩家, 真);
+			根据条件跳过(事件玩家.toggle_edit, 2);
+			等待直到(!正在使用技能 2(事件玩家), 1);
+			设置技能冷却(事件玩家, 按钮(技能2), 0);
+			根据条件跳过(!事件玩家.toggle_edit, 真);
+			事件玩家.pioneer_countability2 += 1;
+		"$$ Doomfist & Vendetta Unlimit lvl"
+		Else;
+			等待直到(在地面上(事件玩家) || !正在使用技能 2(事件玩家), 0.3);
+			设置启用技能 2(事件玩家, (事件玩家.count_ability2 > 1 ? 真 : 假));
+			设置启用技能 2(事件玩家, 在地面上(事件玩家) && 事件玩家.cache_startAbility2);
+			根据条件中止(在地面上(事件玩家));
+			事件玩家.count_ability2 -= 1;
+	}
+}
+
+规则("Mechanic | Ultimate")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		"Total Duration: 218 ticks, 3.488s\nCasting: 76 ticks, 1.216s\nBlade: 125 ticks, 2s\nRecovery: 17 ticks, 0.272s\nSwing Duration: 38 ticks, 0.608s"
+		正在使用终极技能(事件玩家) == 真;
+	}
+
+	动作
+	{
+		If(事件玩家.toggle_invincible || 事件玩家.toggle_edit || !事件玩家.checkpoint_notLast);
+			等待直到(!正在使用终极技能(事件玩家), 4);
+			根据条件跳过(事件玩家.toggle_edit, 1);
+			设置启用终极技能(事件玩家, 真);
+			设置终极技能充能(事件玩家, 100);
+			根据条件跳过(!事件玩家.toggle_edit, 真);
+			事件玩家.pioneer_countultimate += 1;
+		Else;
+			等待直到(!正在使用终极技能(事件玩家), 4);
+			设置启用终极技能(事件玩家, (事件玩家.count_ultimate > 1 ? 真 : 假));
+			设置终极技能充能(事件玩家, 100);
+			根据条件中止(在地面上(事件玩家));
+			事件玩家.count_ultimate -= 1;
+			
+	}
+}
+
+规则("Mechanic | Ban / Cancle Ability 1 of Vendetta")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		// 事件玩家.toggle_invincible != 真;
+		// 事件玩家.checkpoint_notLast == 真;
+		正在使用技能 2(事件玩家) != 真;
+		按钮被按下(事件玩家, 按钮(技能1)) == 真;
+		正在使用主要武器(事件玩家) == 真;
+		按钮被按下(事件玩家, 按钮(主要攻击模式)) != 真;
+	}
+
+	动作
+	{
+		事件玩家.skill_usingshift = 真;
+		"测试斩仇shift新版本为0.496, 随便用0.5糊弄过去了^^ "
+		等待直到(按钮被按下(事件玩家, 按钮(辅助攻击模式)), 0.5);
+		事件玩家.skill_usingshift = 假;
+		根据条件中止(!按钮被按下(事件玩家, 按钮(辅助攻击模式)));
+		取消主要动作(事件玩家);
+	}
+}
+
+规则("Mechanic | Vendetta | Cancel Ultimate")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		正在使用终极技能(事件玩家) == 真;
+		按钮被按下(事件玩家, 按钮(辅助攻击模式)) == 真;
+	}
+
+	动作
+	{
+		取消主要动作(事件玩家);
+	}
+}
+
+规则("Mechanic | On Ground Set 0 Cooldown")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		在地面上(事件玩家) == 真;
+		技能冷却时间(事件玩家, 按钮(技能1)) + 技能冷却时间(事件玩家, 按钮(技能2)) + 技能冷却时间(事件玩家, 按钮(辅助攻击模式)) > 0.200;
+	}
+
+	动作
+	{
+		设置技能冷却(事件玩家, 按钮(技能1), 0);
+		设置技能冷却(事件玩家, 按钮(技能2), 0);
+		等待(0.048, 无视条件);
+		如条件为“真”则循环;
+	}
+}
+
+规则("Mechanic | SUB Reset Abilities")
+{
+	事件
+	{
+		子程序;
+		ResetAbilities;
+	}
+
+	动作
+	{
+		If(事件玩家.toggle_invincible || 事件玩家.toggle_edit);
+			设置启用终极技能(事件玩家, 真);
+			设置启用技能 1(事件玩家, 真);
+			设置启用技能 2(事件玩家, 真);
+		Else;
+			设置启用终极技能(事件玩家, 事件玩家.cache_startUlt);
+			设置启用技能 1(事件玩家, 事件玩家.cache_startAbility1);
+			设置启用技能 2(事件玩家, 事件玩家.cache_startAbility2);
+			事件玩家.count_ability1 = 全局.Count_Ability1[事件玩家.checkpoint_current];
+			事件玩家.count_ability2 = 全局.Count_Ability2[事件玩家.checkpoint_current];
+			事件玩家.count_ultimate = 全局.Count_Ultimate[事件玩家.checkpoint_current];
+		End;
+		设置终极技能充能(事件玩家, 100);
+	}
+}
+
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Pioneer ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+}
+
+规则("Pioneer | Export MapData")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		事件玩家 == 主机玩家;
+		按钮被按下(事件玩家, 按钮(互动)) == 真;
+		按钮被按下(事件玩家, 按钮(装填)) == 真;
+		按钮被按下(事件玩家, 按钮(近身攻击)) == 真;
+	}
+
+	动作
+	{
+
+		启用查看器录制;
+		禁用查看器录制;
+	}
+}
+
+规则("Pioneer | Create First Cp")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+
+	条件
+	{
+		数量(全局.A) == 0;
+		存活(主机玩家) == 真;
+		按钮被按下(主机玩家, 按钮(互动)) == 真;
+		在地面上(主机玩家) == 真;
+	}
+
+	动作
+	{
+		全局.A = 添加至数组(全局.A, 所选位置(主机玩家));
+		// 全局.Toggle_Update = 真;
+	}
+}
+
+规则("Pioneer | Create Other Cp")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		全局.EditorOn == 空;
+		事件玩家.toggle_edit != 真;
+		事件玩家.checkpoint_notLast != 真;
+		事件玩家.toggle_practice != 真;
+		数量(全局.A) >= 1;
+		按钮被按下(事件玩家, 按钮(终极技能)) == 真;
+		按钮被按下(事件玩家, 按钮(装填)) == 真;
+	}
+
+	动作
+	{
+		根据条件跳过(事件玩家.toggle_edit, 11);
+
+		等待(2, 当为“假”时中止);
+		事件玩家.toggle_invincible = 假;
+		播放效果(事件玩家, 负面状态施加声音, 空, 事件玩家, 100);
+		大字体信息(事件玩家, 自定义字符串("开拓者模式"));
+		事件玩家.toggle_edit = 真;
+		禁用按钮(事件玩家, 按钮(终极技能));
+		等待(1, 无视条件);
+		可用按钮(事件玩家, 按钮(终极技能));
+		追踪全局变量频率(Edit_Timer, 全局.Edit_Time, 1, 全部禁用);
+		全局.EditorOn = 事件玩家;
+		事件玩家.ban_standcreate = 真;
+
+		
+		事件玩家.pioneer_countability1 = 空;
+		根据条件跳过(正在使用技能 2(事件玩家), 真);
+		事件玩家.pioneer_countability2 = 空;
+		事件玩家.pioneer_countultimate = 空;
+		调用子程序(ResetAbilities);
+		等待直到((在地面上(事件玩家) && 相距距离(事件玩家, 全局.A[事件玩家.checkpoint_current])>1.8 && !正在使用技能 2(事件玩家)) || !事件玩家.toggle_edit, 99999);
+		全局.Pos_View = 所选位置(事件玩家);
+		开始强制设置玩家位置(事件玩家, 全局.Pos_View, 假);
+		大字体信息(事件玩家, (事件玩家.toggle_edit ? 自定义字符串("按{0}确认,按{1}重设",输入绑定字符串(按钮(互动)),输入绑定字符串(按钮(装填))) : 自定义字符串("开拓时间已到, 已自动结束")));
+		等待直到(按钮被按下(事件玩家, 按钮(互动)) || 按钮被按下(事件玩家, 按钮(装填)) || !事件玩家.toggle_edit, 99999);
+		If(按钮被按下(事件玩家, 按钮(互动)) && 事件玩家.toggle_edit);
+			全局.A = 添加至数组(全局.A, 所选位置(事件玩家));
+			根据条件跳过(事件玩家.pioneer_bhop, 1);
+			全局.BanBhop = 添加至数组(全局.BanBhop, 事件玩家.checkpoint_current);
+			根据条件跳过(事件玩家.pioneer_countbhops > 1, 1);
+			全局.BanStand = 添加至数组(全局.BanStand, 事件玩家.checkpoint_current);
+			全局.Count_Ability1 = 添加至数组(全局.Count_Ability1, 事件玩家.pioneer_countability1);
+			全局.Count_Ability2 = 添加至数组(全局.Count_Ability2, 事件玩家.pioneer_countability2);
+			全局.Count_Ultimate = 添加至数组(全局.Count_Ultimate, 事件玩家.pioneer_countultimate);
+			全局.Toggle_Update = 真;
+		Else;
+			停止强制设置玩家位置(事件玩家);
+			全局.Pos_View = 空;
+			等待(0.048, 无视条件);
+			根据条件循环(事件玩家.toggle_edit && 按钮被按下(事件玩家, 按钮(装填)));
+		End;
+		停止强制设置玩家位置(事件玩家);
+		调用子程序(CheckpointFailReset);
+		等待(0.1, 无视条件);
+		全局.Pos_View = 空;
+		事件玩家.toggle_edit = 假;
+		全局.EditorOn = 空;
+		调用子程序(ResetAbilities);
+		停止追踪全局变量(Edit_Timer);
+		全局.Edit_Timer = 0;
+	}
+}
+
+规则("Pioneer | Stop Pioneer")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		事件玩家.toggle_edit == 真;
+		全局.Edit_Timer >= 全局.Edit_Time;
+	}
+
+	动作
+	{
+		事件玩家.toggle_edit = 假;
+	}
+}
+
+规则("Pioneer | Update Cache")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		事件玩家.checkpoint_notLast != 真;
+		全局.Toggle_Update == 真;
+	}
+
+	动作
+	{
+		调用子程序(UpdateCache);
+		等待(0.25, 无视条件);
+		全局.Toggle_Update = 假;
+	}
+}
+
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Commands ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+}
+
+规则("Command | Toggle Invisible (Hold Ultimate)")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		按钮被按下(事件玩家, 按钮(终极技能)) == 真;
+		按钮被按下(事件玩家, 按钮(装填)) != 真;
+	}
+
+	动作
+	{
+		等待(真, 当为“假”时中止);
+		事件玩家.toggle_invisible = !事件玩家.toggle_invisible;
+		设置不可见(事件玩家, 全部禁用);
+		If(事件玩家.toggle_invisible);
+			设置不可见(事件玩家, 全部);
+		End;
+		小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   {0} {1}", 自定义字符串("隐身模式"), 事件玩家.toggle_invisible ? 自定义字符串("启用") : 自定义字符串("关闭"))
+			: 自定义字符串("   {0} {1}", 自定义字符串("Invisible"), 事件玩家.toggle_invisible ? 自定义字符串("On") : 自定义字符串("Off")));
+		播放效果(事件玩家, 负面状态施加声音, 空, 事件玩家, 100);
+	}
+}
+
+规则("Command | Spectate (Hold Interact)")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		按钮被按下(事件玩家, 按钮(互动)) == 真;
+		按钮被按下(事件玩家, 按钮(近身攻击))== 假;
+	}
+
+	动作
+	{
+		等待(真, 当为“假”时中止);
+		"editor has interact combos"
+		If(全局.EditorOn != 空);
+			等待(真, 当为“假”时中止);
+		End;
+		开启游戏预设复生模式(事件玩家);
+		关闭游戏预设复生模式(事件玩家);
+		If(事件玩家.toggle_spectate);
+			复活(事件玩家);
+			调用子程序(CheckpointFailReset);
+		Else;
+			事件玩家.toggle_invincible = 假;
+			设置受到伤害(事件玩家, 100);
+			击杀(事件玩家, 空);
+			设置受到伤害(事件玩家, 0);
+			小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   再次长按互动键关闭观战模式") : 自定义字符串("   Hold Interact Again To Turn Off Spectate Mode"));
+		End;
+		事件玩家.toggle_spectate = !事件玩家.toggle_spectate;
+	}
+}
+
+规则("Command | Toggle Invincible Mode (Melee + Reload)")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		存活(事件玩家) == 真;
+		按钮被按下(事件玩家, 按钮(近身攻击)) == 真;
+		按钮被按下(事件玩家, 按钮(装填)) == 真;
+		按钮被按下(事件玩家, 按钮(互动)) == 假;
+		事件玩家.toggle_edit != 真;
+	}
+
+	动作
+	{
+		事件玩家.toggle_invincible = !事件玩家.toggle_invincible;
+		If(事件玩家.toggle_invincible);
+			大字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("探点模式") : 自定义字符串("Invincible Mode"));
+			调用子程序(ResetAbilities);
+		Else;
+			If(正在使用技能 2(事件玩家));
+				开始强制设置玩家位置(事件玩家, 全局.A[事件玩家.checkpoint_current], 假);
+				等待直到 (!正在使用技能 2(事件玩家), 99999);
+				停止强制设置玩家位置(事件玩家);
+			End;
+			If(事件玩家.toggle_practice);
+				大字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("练习模式") : 自定义字符串("Practice Mode"));
+				调用子程序(CheckpointFailReset);
+			Else If(事件玩家.checkpoint_notLast);
+				大字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("跑图模式") : 自定义字符串("Normal Mode"));
+				调用子程序(CheckpointFailReset);
+			End;
+		End;
+		"Anti spam"
+		等待(0.128, 无视条件);
+	}
+}
+
+规则("Command | Toggle Practice Mode (Melee + Ultimate)")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		事件玩家.toggle_edit != 真;
+		存活(事件玩家) == 真;
+		按钮被按下(事件玩家, 按钮(装填)) == 假;
+		按钮被按下(事件玩家, 按钮(近身攻击)) == 真;
+		按钮被按下(事件玩家, 按钮(终极技能)) == 真;
+	}
+
+	动作
+	{
+		事件玩家.lockstate = 真;
+		事件玩家.toggle_practice = !事件玩家.toggle_practice;
+		If(事件玩家.toggle_practice);
+			大字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("练习模式") : 自定义字符串("Practice Mode"));
+			事件玩家.checkpoint_practice = 事件玩家.checkpoint_current;
+			If(事件玩家.toggle_invincible);
+				事件玩家.toggle_invincible = 假;
+				调用子程序(CheckpointFailReset);
+			End;
+		Else;
+			大字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("跑图模式") : 自定义字符串("Normal Mode"));
+			事件玩家.checkpoint_current = 事件玩家.checkpoint_practice;
+			调用子程序(CheckpointFailReset);
+			调用子程序(UpdateCache);
+		End;
+		"Anti spam"
+		等待(0.128, 无视条件);
+		事件玩家.lockstate = 假;
+	}
+}
+
+规则("Command | Skip (Crouch + Primary-Next | Secondary-Previous)")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		数量(全局.A) > 真;
+		事件玩家.toggle_practice == 真;
+		按钮被按下(事件玩家, 按钮(蹲下)) == 真;
+		按钮被按下(事件玩家, 按钮(主要攻击模式)) != 按钮被按下(事件玩家, 按钮(辅助攻击模式));
+	}
+
+	动作
+	{
+		事件玩家.lockstate = 真;
+		"@Condition hostPlayer.editor_on or ( eventPlayer.toggle_practice and eventPlayer.isHoldingButton(Button.ABILITY_1) )"
+		事件玩家.checkpoint_current += 按钮被按下(事件玩家, 按钮(辅助攻击模式)) ? 数量(全局.A) - 真 : 真;
+		事件玩家.checkpoint_current %= 数量(全局.A);
+		"waitUntil(eventPlayer.isHoldingButton(Button.PRIMARY_FIRE) == eventPlayer.isHoldingButton(Button.SECONDARY_FIRE), 0.256) # faster if you spam button"
+		// If(事件玩家.checkpoint_skip);
+		// 	等待(0.320, 当为“真”时重新开始);
+		// 	调用子程序(UpdateCache);
+		// 	调用子程序(CheckpointFailReset);
+		// Else;
+		// 	事件玩家.checkpoint_skip = 真;
+		// 	调用子程序(UpdateCache);
+		// 	调用子程序(CheckpointFailReset);
+		// 	等待(0.480, 当为“真”时重新开始);
+		// End;
+		等待(0.32, 当为“真”时重新开始);
+		调用子程序(UpdateCache);
+		调用子程序(CheckpointFailReset);
+		如条件为“真”则循环;
+		事件玩家.lockstate = 假;
+	}
+}
+
+规则("Command | Quick Reset (Reload | Hold Reload to Enable)")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		按钮被按下(事件玩家, 按钮(装填)) == 真;
+		按钮被按下(事件玩家, 按钮(近身攻击)) == 假;
+		按钮被按下(事件玩家, 按钮(互动)) == 假;
+		按钮被按下(事件玩家, 按钮(终极技能)) != 真;
+	}
+
+	动作
+	{
+		If(事件玩家.toggle_quickRestart);
+			调用子程序(CheckpointFailReset);
+			等待(0.320, 无视条件);
+		End;
+		等待(真, 当为“假”时中止);
+		事件玩家.toggle_quickRestart = !事件玩家.toggle_quickRestart;
+		播放效果(事件玩家, 正面状态施加声音, 空, 事件玩家, 100);
+		大字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? (事件玩家.toggle_quickRestart ? 自定义字符串("快速回点已启用") : 自定义字符串("快速回点已关闭")) : (
+			事件玩家.toggle_quickRestart ? 自定义字符串("Quick Reset Is Enabled") : 自定义字符串("Quick Reset Is Disabled")));
+	}
+}
+
+规则("Command | Toggle Hud (Hold Secondary)")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		按钮被按下(事件玩家, 按钮(辅助攻击模式)) == 真;
+		按钮被按下(事件玩家, 按钮(主要攻击模式)) == 假;
+		"don't activate during skipping"
+		按钮被按下(事件玩家, 按钮(蹲下)) == 假;
+	}
+
+	动作
+	{
+		等待(1.500, 当为“假”时中止);
+		事件玩家.toggle_guide = !事件玩家.toggle_guide;
+		小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? (事件玩家.toggle_guide ? 自定义字符串("   HUD已开启") : 自定义字符串("   HUD已隐藏")) : (
+			事件玩家.toggle_guide ? 自定义字符串("   HUD Is Now Shown") : 自定义字符串("   HUD Is Now Hidden")));
+		播放效果(事件玩家, 正面状态施加声音, 空, 事件玩家, 100);
+	}
+}
+
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Huds ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+}
+
+规则("HUD | Global Localplayer")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+
+	动作
+	{
+		"剩余时间 版本号"
+		创建HUD文本(本地玩家, 空, 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.0A", 全局.TimeRemaining), 空, 右边, -99, 空, 颜色(红色), 空, 可见和字符串, 默认可见度);
+		创建HUD文本(本地玩家.toggle_guide, 空, 自定义字符串(
+			"斩仇帕克萌新群: 614016408\n                                                                                                          {0}",
+			自定义字符串("                                                                ")), 空, 左边, -99, 空, 颜色(水绿色), 空, 可见和字符串, 默认可见度);
+		创建HUD文本(本地玩家, 空, 空, 自定义字符串("长按 {0} 切换显示HUD", 输入绑定字符串(按钮(辅助攻击模式))), 右边, -98, 空, 空, 颜色(白色), 可见，字符串和颜色, 默认可见度);
+		创建HUD文本(本地玩家.toggle_guide, 空, 空, 自定义字符串("长按 {0} | 隐身模式 {1}", 输入绑定字符串(按钮(终极技能)), 本地玩家.toggle_invisible ? 自定义字符串("| 启用") : 空数组), 右边,
+			-97, 空, 空, 本地玩家.toggle_invisible ? 颜色(绿色) : 颜色(白色), 可见，字符串和颜色, 默认可见度);
+		创建HUD文本(本地玩家.toggle_guide, 空, 空, 自定义字符串("{0}按 {1} | {2} 快速回点", 本地玩家.toggle_quickRestart ? 空数组 : 数组(自定义字符串("长")), 输入绑定字符串(按钮(装填)),
+			本地玩家.toggle_quickRestart ? 空数组 : 自定义字符串("启用")), 右边, -96, 空, 空, 颜色(白色), 可见和字符串, 默认可见度);
+		创建HUD文本(本地玩家.toggle_guide, 空, 空, 自定义字符串("长按 {0} | 观战模式 {1}", 输入绑定字符串(按钮(互动)), 本地玩家.toggle_spectate ? 自定义字符串("| 启用") : 空数组), 右边,
+			-95, 空, 空, 本地玩家.toggle_spectate ? 颜色(绿色) : 颜色(白色), 可见，字符串和颜色, 默认可见度);
+		创建HUD文本(本地玩家.toggle_guide, 空, 空, 自定义字符串("{0} + {1} | 探点模式 {2}", 输入绑定字符串(按钮(装填)), 输入绑定字符串(按钮(近身攻击)),
+			本地玩家.toggle_invincible ? 自定义字符串("| 启用") : 空数组), 右边, -94, 空, 空, 本地玩家.toggle_invincible ? 颜色(绿色) : 颜色(白色), 可见，字符串和颜色, 默认可见度);
+		创建HUD文本(本地玩家.toggle_guide, 空, 空, 自定义字符串("{0} + {1} | 练习模式{2}", 输入绑定字符串(按钮(终极技能)), 输入绑定字符串(按钮(近身攻击)), 本地玩家.toggle_practice ? 自定义字符串(
+			" | ({0})", 本地玩家.checkpoint_practice) : 空数组), 右边, -93, 空, 空, 本地玩家.toggle_practice ? 颜色(绿色) : 颜色(白色), 可见，字符串和颜色, 默认可见度);
+		"开拓信息"
+		创建进度条HUD文本(本地玩家, 全局.Edit_Timer / 全局.Edit_Time * 100, 全局.A == 空数组 ? 自定义字符串("请房主按 {0} 确认起始点位", 输入绑定字符串(按钮(互动))) : (
+			全局.EditorOn != 空 ? 自定义字符串("当前开拓者 {0} , 请等待开拓 , {1}s 后自动中止", 全局.EditorOn, 全局.Edit_Time - 全局.Edit_Timer) : 自定义字符串(
+			"当前没有开拓者, 长按 {0} + {1} 成为开拓者", 输入绑定字符串(按钮(终极技能)), 输入绑定字符串(按钮(装填)))), 顶部, -110, 全局.EditorOn == 空 ? 颜色(白色) : 颜色(绿色), 颜色(白色),
+			可见，值和颜色, 默认可见度);
+	}
+}
+
+规则("HUD | Each Player")
+{
+	事件
+	{
+		玩家加入比赛;
+		双方;
+		全部;
+	}
+
+	动作
+	{
+		等待(1, 无视条件);
+		"关卡封禁\\n当前关卡"
+		创建HUD文本(事件玩家, 空, 自定义字符串("{0}关卡 {1} / {2}", 事件玩家.ban_string != 空数组 ? 自定义字符串("{0}\n", 事件玩家.ban_string) : 空数组,
+			事件玩家.checkpoint_current, 数量(全局.A) - 1), 空, 顶部, -111, 空, 颜色(白色), 空, 字符串, 默认可见度);
+		创建HUD文本(事件玩家, 自定义字符串("小跳"), 空, 自定义字符串(
+			"                                                                                                                             {0}",
+			自定义字符串("                                             ")), 左边, -90, 事件玩家.skill_usedBhop ? 颜色(红色) : 颜色(绿色), 空, 空, 可见，字符串和颜色,
+			默认可见度);
+		"技能次数"
+		创建HUD文本(事件玩家, 空, 空, 自定义字符串("\n{0} 本关可用次数 {1}\n{2}", 技能图标字符串(英雄(斩仇), 按钮(技能1)), 全局.Count_Ability1[事件玩家.checkpoint_current], 自定义字符串(
+			"{0} 本关可用次数 {1}\n{2}", 技能图标字符串(英雄(斩仇), 按钮(技能2)), 全局.Count_Ability2[事件玩家.checkpoint_current], 自定义字符串(
+			"{0} 本关可用次数 {1}                                                                                                               {2}",
+			技能图标字符串(英雄(斩仇), 按钮(终极技能)), 全局.Count_Ultimate[事件玩家.checkpoint_current], 自定义字符串(
+			"                                                           ")))), 左边, -89, 空, 空, 颜色(白色), 可见，字符串和颜色, 默认可见度);
+		"BE ID Title - 战网ID称号 <---- DISPLAY ID & Lvl"
+		创建地图文本(已过滤的数组(所有玩家(所有队伍), 当前数组元素.toggle_guide && 当前数组元素 != 事件玩家), 自定义字符串("{0}{1}", 字符串分割(首个(事件玩家), 空数组),
+			事件玩家.checkpoint_current ? 自定义字符串(" ({0})", 事件玩家.checkpoint_current) : 空数组), 矢量(0, 2, 0) + 事件玩家, 1, 根据表面截取, 可见，位置和字符串, 颜色(白色),
+			默认可见度);
+	}
+}
+
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Addon Functions ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+}
+
+规则("Addon | Pre-set control Map Portal - Toggle Via Workshop Settings")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		数量(全局.PortalLoc) != 空;
+		(事件玩家.toggle_invincible || !事件玩家.checkpoint_notLast) == 真;
+		对任意为“真”(全局.PortalLoc, 相距距离(当前数组元素, 所选位置(事件玩家) + 0.200 * 上) < 1.300) == 真;
+	}
+
+	动作
+	{
+		传送(事件玩家, 首个(已排序的数组(全局.PortalDest, 相距距离(事件玩家, 全局.PortalLoc[当前数组索引]))));
+	}
+}
+
+规则("Addon | Preset Control Map Portal - Toggle Via Workshop Settings")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+
+	动作
+	{
+		"wait(LoadOrder.portal) # overwrite pasta"
+		If(当前地图 == 地图(釜山));
+			"\"down > sanc\",\"down > meka\",\"sanc > down\",\"sanc > meka\",\"meka > sanc\",\"meka > down\""
+			全局.PortalNames = 字符串分割(自定义字符串("Sanctuary0MEKA Base0Downtown0MEKA Base0Sanctuary0Downtown"), 首个(空));
+			全局.PortalLoc = 数组(矢量(47.946, 7.248, -93.922), 矢量(55.921, 6.998, -94.024), 矢量(-326.382, 10.810, 117.261), 矢量(-330.960, 10.810,
+				117.416), 矢量(219.567, 10.215, 243.653), 矢量(225.976, 10.227, 240.799));
+			全局.PortalDest = 数组(矢量(-328.552, 10.010, 120.820), 矢量(221.152, 9.376, 238.765), 矢量(52.197, 6.301, -97.513), 矢量(221.271, 9.431,
+				238.978), 矢量(-328.601, 10.010, 120.823), 矢量(52.197, 6.299, -97.513));
+		Else If(当前地图 == 地图(伊利奥斯));
+			"\"light > ruin\",\"light > well\",\"ruin > light\",\"ruin > well\",\"well > light\",\"well > ruin\""
+			全局.PortalNames = 字符串分割(自定义字符串("Ruins0Well0Lighthouse0Well0Lighthouse0Ruins"), 首个(空));
+			全局.PortalLoc = 数组(矢量(325.722, -22.665, -40.401), 矢量(327.430, -22.665, -36.089), 矢量(26.176, 58.367, -156.415), 矢量(30.472, 58.367,
+				-156.307), 矢量(-199.945, 2.015, -2.918), 矢量(-194.930, 2.015, -8.054));
+			全局.PortalDest = 数组(矢量(28.375, 57.659, -161.195), 矢量(-200.464, 1.306, -8.604), 矢量(333.088, -23.389, -40.933), 矢量(-200.464, 1.306,
+				-8.604), 矢量(333.088, -23.389, -40.933), 矢量(28.375, 57.829, -161.195));
+		Else If(当前地图 == 地图(漓江塔) || 当前地图 == 地图(春节漓江塔));
+			"\"control > garden\",\"control > market\",\"garden > control\",\"garden > market\",\"market > control\",\"market > garden\""
+			全局.PortalNames = 字符串分割(自定义字符串("Garden0Night Market0Control Center0Night Market0Control Center0Garden"), 首个(空));
+			全局.PortalLoc = 数组(矢量(-2.815, 271, 295.373), 矢量(2.905, 271, 295.052), 矢量(5.788, 95.056, 135.298), 矢量(-5.343, 95.050, 134.638), 矢量(
+				-2.738, 假, -61.911), 矢量(5.043, 假, -61.879));
+			全局.PortalDest = 数组(矢量(0.286, 94.292, 140.396), 矢量(0.584, -0.709, -54.469), 矢量(0.245, 270.292, 301.428), 矢量(0.773, -0.708, -54.361),
+				矢量(0.245, 270.292, 301.428), 矢量(0.286, 94.292, 140.396));
+		Else If(当前地图 == 地图(尼泊尔));
+			"\"vil > shrine\",\"vil > sanc\", \"shrine > vil\",\"shrine > sanc\",#\"sanc > vil\",\"sanc > shrine\""
+			全局.PortalNames = 字符串分割(自定义字符串("Shrine0Sanctum0Village0Sanctum0Village0Shrine"), 首个(空));
+			全局.PortalLoc = 数组(矢量(-194.732, -92.860, -3.802), 矢量(-194.585, -92.860, 4.187), 矢量(-33.165, 14, 5.212), 矢量(-33.058, 14, -5.550), 矢量(
+				84.750, 129.008, -3.624), 矢量(84.534, 129, 4.032));
+			全局.PortalDest = 数组(矢量(-40.190, 13.292, -0.105), 矢量(78.430, 128.292, 0.149), 矢量(-190.540, -93.569, 0.122), 矢量(78.430, 128.292,
+				0.149), 矢量(-190.540, -93.569, 0.122), 矢量(-40.190, 13.292, -0.105));
+		Else If(当前地图 == 地图(绿洲城));
+			"\"uni > garden\",\"uni > city\",\"garden > uni\",\"garden > city\",\"city > garden\",\"city > uni\""
+			全局.PortalNames = 字符串分割(自定义字符串("Gardens0City Center0University0City Center0Gardens0University"), 首个(空));
+			全局.PortalLoc = 数组(矢量(-211.137, 20, -5.084), 矢量(-211.346, 20, 5.029), 矢量(143.061, 8.377, -245.040), 矢量(139.333, 8.377, -249.964),
+				矢量(157.297, 12.522, 255.759), 矢量(151.452, 12.522, 261.099));
+			全局.PortalDest = 数组(矢量(134.366, 7.829, -240.530), 矢量(158.270, 11.814, 262.272), 矢量(-206.269, 19.292, 0.103), 矢量(158.283, 11.814,
+				262.283), 矢量(134.318, 7.829, -240.667), 矢量(-206.269, 19.292, 0.103));
+		// 南极半岛  疑似从地图池中被移除?
+		// Else If(当前地图 == 地图(南极半岛));
+		// 	全局.PortalNames = 字符串分割(自定义字符串("Labs0Icebreaker0Sublevel0Icebreaker0Labs0Sublevel"), 首个(空));
+		// 	全局.PortalLoc = 数组(矢量(280.660, -12.150, -223.650), 矢量(273.270, 42.740, 198.150), 矢量(266.580, 42.740, 198.170), 矢量(-58.290, -154,
+		// 		63.030), 矢量(-58.360, -154, 56.470), 矢量(287.080, -12.150, -223.590));
+		// 	全局.PortalDest = 数组(矢量(270, 42.700, 190.440), 矢量(284.070, -12.750, -216.150), 矢量(-53.510, -154.500, 60.080), 矢量(284.070, -12.750,
+		// 		-216.150), 矢量(270, 42.700, 190.440), 矢量(-53.510, -154.500, 60.080));
+		Else If(当前地图 == 地图(萨摩亚));
+			全局.PortalNames = 字符串分割(自定义字符串("Beach0Volcano0Downtown0Volcano0Beach0Downtown"), 首个(空));
+			全局.PortalLoc = 数组(矢量(231.980, 7.230, -262.840), 矢量(236.780, 7.230, -262.750), 矢量(-327.590, 3.600, -108.690), 矢量(-332.710, 3.600,
+				-108.590), 矢量(25.400, 341, 354.380), 矢量(30, 341, 354.340));
+			全局.PortalDest = 数组(矢量(-329.860, 3.050, -103.400), 矢量(27.590, 339.760, 348.770), 矢量(234.070, 6.120, -266.880), 矢量(27.590, 339.760,
+				348.770), 矢量(-329.860, 3.050, -103.400), 矢量(234.070, 6.120, -266.880));
+	}
+}
+
+规则("Addon | Loading preset portal")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+
+	条件
+	{
+		
+	}
+
+	动作
+	{
+		"等待加载"
+		等待(2.048, 无视条件);
+		If(数量(全局.PortalDest));
+			For 全局变量(NANBA, 0, 数量(全局.PortalLoc), 真);
+				创建效果(已过滤的数组(所有玩家(所有队伍), 当前数组元素.toggle_invincible || !当前数组元素.checkpoint_notLast), 有害光环, 全局.NANBA % 2 ? 颜色(水绿色) : 颜色(橙色),
+					全局.PortalLoc[全局.NANBA], 0.600, 可见);
+				创建地图文本(已过滤的数组(所有玩家(所有队伍), 当前数组元素.toggle_invincible || !当前数组元素.checkpoint_notLast), 全局.PortalNames[全局.NANBA],
+					全局.PortalLoc[全局.NANBA] + 上, 真, 根据表面截取, 可见, 颜色(白色), 默认可见度);
+			End;
+			等待(假, 无视条件);
+		End;
+	}
+}
+
+规则("Addon | Little Destructo - Fence Breaker")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+
+	动作
+	{
+		"Made by FishoFire version 1.0\nwait to overwrite any from copy pastas"
+		等待(0.032, 无视条件);
+		"first entry will act as index, rest is the points themselves"
+		全局.MapVectorArray = 数组(空);
+		"tdm/dm = first spawn points, the maps are not big so it just covers entire map. all teams defaults to team 1 spawn\npush: payload and cp 0 are set but rest isnt. normal payload maps have more then 1 point.\nrest of maps have up to 3 points"
+		修改全局变量(MapVectorArray, 添加至数组, 当前游戏模式 == 游戏模式(勇夺锦旗) ? 数组(旗帜位置(队伍1), 旗帜位置(队伍2)) : (数组包含(数组(游戏模式(团队死斗), 游戏模式(死斗)), 当前游戏模式) ? 首个(重生点(
+			所有队伍)) : (首个(运载目标位置) && !(目标位置(真) + 目标位置(2)) ? 运载目标位置 : 数组(目标位置(假), 目标位置(真), 目标位置(2)))));
+		"explode in a grid around the selected points"
+		While(数量(全局.MapVectorArray) > 1);
+			全局.MapVectorArray[假] = 空;
+			While(首个(全局.MapVectorArray) < 256);
+				创建弹道(球弹道, 空, 全局.MapVectorArray[真] - 矢量(240, 假, 240) + 首个(全局.MapVectorArray) % 16 * 30 * 左 + 取整(首个(全局.MapVectorArray) / 16, 下)
+					* 30 * 前, 下, 至地图, 治疗, 队伍1, 0, 0, 30, 有益爆炸, 爆炸声音, 1, 1, 0, 0, 0, 0);
+				全局.MapVectorArray[假] += 真;
+				"use modulo to only wait every x orbs keep the 0 change the other number"
+				If(!(首个(全局.MapVectorArray) % 3));
+					等待(假, 无视条件);
+				End;
+			End;
+			修改全局变量(MapVectorArray, 根据索引从数组中移除, 真);
+		End;
+		"handle exceptions (looking at you new queen street)"
+		全局.MapVectorArray = 数组(矢量(8.276, 4.113, 15.261), 矢量(-8.319, 2.624, 14.245), 矢量(0.006, 4.821, 18.513));
+		While(数量(全局.MapVectorArray));
+			"same as other projectile before"
+			创建弹道(球弹道, 空, 首个(全局.MapVectorArray), 下, 至地图, 治疗, 队伍1, 0, 0, 30, 有益爆炸, 爆炸声音, 1, 1, 0, 0, 0, 0);
+			修改全局变量(MapVectorArray, 根据索引从数组中移除, 假);
+			等待(假, 无视条件);
+		End;
+		全局.MapVectorArray = 空;
+	}
+}
+
+规则("Addon | HUD | All Players Current Checkpiont <---- 玩家当前所在关数")
+{
+	事件
+	{
+		持续 - 全局;
+	}
+
+	动作
+	{
+		等待(0.800, 无视条件);
+		创建HUD文本(本地玩家.toggle_guide, 空, 自定义字符串("{0}{1} ", 所有玩家(所有队伍)[0] ? 自定义字符串("\n{0}:  {1}", 所有玩家(所有队伍)[0], 所有玩家(所有队伍)
+			[0].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[1] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[1], 所有玩家(所有队伍)
+			[1].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[2] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[2], 所有玩家(所有队伍)
+			[2].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[3] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[3], 所有玩家(所有队伍)
+			[3].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[4] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[4], 所有玩家(所有队伍)
+			[4].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[5] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[5], 所有玩家(所有队伍)
+			[5].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[6] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[6], 所有玩家(所有队伍)
+			[6].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[7] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[7], 所有玩家(所有队伍)
+			[7].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[8] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[8], 所有玩家(所有队伍)
+			[8].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[9] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[9], 所有玩家(所有队伍)
+			[9].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}{1}", 所有玩家(所有队伍)[10] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[10], 所有玩家(所有队伍)
+			[10].checkpoint_current) : 自定义字符串(""), 自定义字符串("{0}", 所有玩家(所有队伍)[11] ? 自定义字符串("\n{0}: {1}", 所有玩家(所有队伍)[11], 所有玩家(所有队伍)
+			[11].checkpoint_current) : 自定义字符串(""))))))))))))), 自定义字符串(
+			"                                                                                                                                "),
+			左边, 0, 空, 自定义颜色(255, 200, 254, 255), 空, 可见和字符串, 默认可见度);
+	}
+}
