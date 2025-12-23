@@ -133,6 +133,8 @@
 	0: CheckpointFailReset
 	1: UpdateCache
 	2: ResetAbilities
+	3: SaveData
+	4: DeleteSave
 }
 规则("Disable inspector")
 {
@@ -147,7 +149,7 @@
 	}
 }
 
-规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.0B ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.0C ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
 {
 	事件
 	{
@@ -296,6 +298,8 @@
 				等待(假, 无视条件);
 				播放效果(事件玩家, 环状爆炸声音, 空, 事件玩家, 100);
 				播放效果(事件玩家.toggle_invisible ? 事件玩家 : 真, 环状爆炸, 颜色(天蓝色), 所选位置(事件玩家), 4);
+				调用子程序(DeleteSave);
+				调用子程序(SaveData);
 			End;
 		Else If((相距距离(事件玩家, 全局.A[事件玩家.checkpoint_current]) > 1.8) && !事件玩家.skill_usingshift);
 			调用子程序(CheckpointFailReset);
@@ -409,6 +413,39 @@
 			事件玩家.ban_standcreate = 假;
 			事件玩家.ban_bhop = 假;
 		End;
+	}
+}
+
+规则("Parkour | SUB Delete Save")
+{
+	事件
+	{
+		子程序;
+		DeleteSave;
+	}
+
+	动作
+	{
+		修改全局变量(SaveName, 根据索引从数组中移除, 数组值的索引(全局.SaveEnt, 事件玩家));
+		修改全局变量(SaveCp, 根据索引从数组中移除, 数组值的索引(全局.SaveEnt, 事件玩家));
+		"must always be last because its the index itself"
+		修改全局变量(SaveEnt, 根据索引从数组中移除, 数组值的索引(全局.SaveEnt, 事件玩家));
+	}
+}
+
+规则("Parkour | SUB Save Data")
+{
+	事件
+	{
+		子程序;
+		SaveData;
+	}
+
+	动作
+	{
+		修改全局变量(SaveEnt, 添加至数组, 事件玩家);
+		修改全局变量(SaveName, 添加至数组, 字符串分割(首个(事件玩家), 空数组));
+		修改全局变量(SaveCp, 添加至数组, 事件玩家.checkpoint_current);
 	}
 }
 
@@ -587,7 +624,7 @@
 		If(事件玩家.toggle_invincible || 事件玩家.toggle_edit || !事件玩家.checkpoint_notLast);
 			设置启用技能 2(事件玩家, 真);
 			根据条件跳过(事件玩家.toggle_edit, 2);
-			等待直到(!正在使用技能 2(事件玩家), 1);
+			等待直到(!正在使用技能 2(事件玩家), 2);
 			设置技能冷却(事件玩家, 按钮(技能2), 0);
 			根据条件跳过(!事件玩家.toggle_edit, 真);
 			事件玩家.pioneer_countability2 += 1;
@@ -846,7 +883,10 @@
 			全局.Count_Ability1 = 添加至数组(全局.Count_Ability1, 事件玩家.pioneer_countability1);
 			全局.Count_Ability2 = 添加至数组(全局.Count_Ability2, 事件玩家.pioneer_countability2);
 			全局.Count_Ultimate = 添加至数组(全局.Count_Ultimate, 事件玩家.pioneer_countultimate);
+			事件玩家.checkpoint_current += 1;
 			全局.Toggle_Update = 真;
+			调用子程序(DeleteSave);
+			调用子程序(SaveData);
 		Else;
 			停止强制设置玩家位置(事件玩家);
 			全局.Pos_View = 空;
@@ -1209,7 +1249,7 @@
 	动作
 	{
 		"剩余时间 版本号"
-		创建HUD文本(本地玩家, 空, 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.0B", 全局.TimeRemaining), 空, 右边, -99, 空, 颜色(红色), 空, 可见和字符串, 默认可见度);
+		创建HUD文本(本地玩家, 空, 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.0C", 全局.TimeRemaining), 空, 右边, -99, 空, 颜色(红色), 空, 可见和字符串, 默认可见度);
 		创建HUD文本(本地玩家.toggle_guide, 空, 自定义字符串(
 			"斩仇帕克萌新群: 614016408\n                                                                                                          {0}",
 			自定义字符串("                                                                ")), 空, 左边, -99, 空, 颜色(水绿色), 空, 可见和字符串, 默认可见度);
