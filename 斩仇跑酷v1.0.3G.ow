@@ -883,7 +883,7 @@
 		全局.LeaderBoardFull = 已排序的数组(全局.LeaderBoardFull, 当前数组元素[真]);
 		全局.LeaderBoardRemake = 空数组;
 		For 全局变量(NANBA, 0, 数量(全局.LeaderBoardFull), 1);
-			全局.LeaderBoardRemake = 单次赋值(自定义字符串("{0}　 {1}:　{2}\n", 全局.LeaderBoardRemake, 全局.NANBA + 1, 自定义字符串("{0} - {1}\n", 首个(全局.LeaderBoardFull[全局.NANBA]), 最后(全局.LeaderBoardFull[全局.NANBA]))));
+			全局.LeaderBoardRemake = 单次赋值(自定义字符串("{0}　 {1}:　{2}", 全局.LeaderBoardRemake, 全局.NANBA + 1, 自定义字符串("{0} - {1}\n", 首个(全局.LeaderBoardFull[全局.NANBA]), 最后(全局.LeaderBoardFull[全局.NANBA]))));
 		End;
 	}
 }
@@ -3056,8 +3056,8 @@
 				"代码: {0}                                                                                                ", 全局.Code) : 自定义字符串(
 				"Map Code: {0}                                                                                                ", 全局.Code), 左边,
 				-199, 空, 空, 全局.ColorConfig[真], 可见和字符串, 默认可见度);
-			创建HUD文本(本地玩家.toggle_guide, 空, 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("长按 {0} + {1} | 预览关卡", 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(辅助攻击模式)))
-				: 自定义字符串("Hold {0} + {1} | Preview CP", 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(辅助攻击模式))), 右边, -160, 空, 空, 本地玩家.preview_array1 ? 单次赋值(
+			创建HUD文本(本地玩家.toggle_guide, 空, 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("长按 {0} + {1} | 预览关卡 (探点模式下)", 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(辅助攻击模式)))
+				: 自定义字符串("Hold {0} + {1} | Preview CP (In Invincible)", 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(辅助攻击模式))), 右边, -160, 空, 空, 本地玩家.preview_array1 ? 单次赋值(
 				全局.ColorConfig[6]) : 单次赋值(全局.ColorConfig[5]), 可见，字符串和颜色, 默认可见度);
 			创建HUD文本(首个(本地玩家.preview_array1 && 本地玩家.toggle_guide), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串(
 				"移动键 ◀ ▶ | 预览其他\n移动键 ◀ ▶ | 修改间距 \n视角移动 | 调整浏览视角") : 自定义字符串(
@@ -3645,6 +3645,14 @@
 		Else;
 			停止镜头(事件玩家);
 		End;
+	}
+}
+
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Map Data & Addon Settings Are On Page 2 - 地图数据和附加组件的设置在第2页 ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+{
+	事件
+	{
+		持续 - 全局;
 	}
 }
 
