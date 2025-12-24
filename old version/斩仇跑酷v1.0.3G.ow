@@ -2,7 +2,7 @@
 {
 	主程序
 	{
-		描述: "▶ 斩仇跑酷编辑器 v1.0.3F\r\n\r\n代码: J4GF6\r\n维护: 十六 , 芒果鲨\r\n\r\n斩仇跑酷交流群：614016408"
+		描述: "▶ 斩仇跑酷编辑器 v1.0.3G\r\n\r\n代码: J4GF6\r\n\r\n斩仇跑酷交流群：614016408"
 		模式名称: "Vendetta Parkour - 斩仇跑酷"
 	}
 	大厅
@@ -226,7 +226,7 @@
 	}
 }
 
-规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.3F ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.3G ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
 {
 	事件
 	{
@@ -492,7 +492,7 @@
 			"kill player if not colleted the locks"
 			调用子程序(CheckpointFailReset);
 		Else If(事件玩家.ban_bhop && 事件玩家.skill_usedBhop);
-			小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   ↓ 留小跳进点!") : 自定义字符串("   ≥ Must Have A Bhop To Complete!"));
+			小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   ↓ 留小跳进点!") : 自定义字符串("   ↓ Must Have A Bhop To Complete!"));
 			调用子程序(CheckpointFailReset);
 		Else;
 			事件玩家.checkpoint_moved = 真;
@@ -578,10 +578,8 @@
 
 	动作
 	{
-		If(事件玩家.cache_collectedLocks != 空数组);
-			调用子程序(ResetAbilities);
-		End;
-		根据条件跳过(事件玩家.skill_usingshift, 4);
+		根据条件跳过(事件玩家.skill_usingshift, 5);
+		调用子程序(ResetAbilities);
 		事件玩家.cache_collectedLocks = 空数组;
 		If((相距距离(事件玩家, 最后(全局.A[事件玩家.checkpoint_current])) > 1.8) && !(事件玩家.toggle_invincible || 事件玩家.toggle_spectate));
 			调用子程序(CheckpointFailReset);
@@ -882,9 +880,11 @@
 		End;
 		修改全局变量(LeaderBoardFull, 添加至数组, 数组(数组(字符串分割(首个(事件玩家), 空数组), 事件玩家.timer_normal, 自定义字符串("{0} sec", 事件玩家.timer_normal))));
 		"Update LeaderBoard"
-		// 全局.LeaderBoardRemake = 真;
 		全局.LeaderBoardFull = 已排序的数组(全局.LeaderBoardFull, 当前数组元素[真]);
-		全局.LeaderBoardRemake = 映射的数组(全局.LeaderBoardFull, 自定义字符串("　 {0}:　{1} - {2}\n", 当前数组索引 + 真, 首个(当前数组元素), 最后(当前数组元素)));
+		全局.LeaderBoardRemake = 空数组;
+		For 全局变量(NANBA, 0, 数量(全局.LeaderBoardFull), 1);
+			全局.LeaderBoardRemake = 单次赋值(自定义字符串("{0}　 {1}:　{2}", 全局.LeaderBoardRemake, 全局.NANBA + 1, 自定义字符串("{0} - {1}\n", 首个(全局.LeaderBoardFull[全局.NANBA]), 最后(全局.LeaderBoardFull[全局.NANBA]))));
+		End;
 	}
 }
 
@@ -1146,7 +1146,7 @@
 	动作
 	{
 		"Hazard Ability 1 Reset Wall Climb"
-		If(事件玩家.toggle_invincible || (全局.EditorOn && 事件玩家 == 主机玩家) || !事件玩家.checkpoint_notLast);
+		If(事件玩家.toggle_invincible || !事件玩家.checkpoint_notLast);
 			设置启用技能 1(事件玩家, 真);
 		"$$ Doomfist & Vendetta Unlimit lvl"
 		Else;
@@ -1156,13 +1156,40 @@
 	}
 }
 
-规则("Mechanic | Ability 1")
+// 规则("Mechanic | Ability 2")
+// {
+// 	事件
+// 	{
+// 		持续 - 每名玩家;
+// 		双方;
+// 		全部;
+// 	}
+
+// 	条件
+// 	{
+// 		正在使用技能 2(事件玩家) == 真;
+// 	}
+
+// 	动作
+// 	{
+// 		"Hazard Ability 1 Reset Wall Climb"
+// 		If(事件玩家.toggle_invincible || !事件玩家.checkpoint_notLast);
+// 			设置启用技能 1(事件玩家, 真);
+// 		"$$ Doomfist & Vendetta Unlimit lvl"
+// 		Else;
+// 			等待直到 (!正在使用技能 2(事件玩家), 1);
+// 			If((相距距离(事件玩家, 最后(全局.A[事件玩家.checkpoint_current])) <= 1.8) && 在地面上(事件玩家));
+// 				调用子程序(ResetAbilities);
+// 	}
+// }
+
+规则("Mechanic | Ability 2")
 {
 	事件
 	{
 		持续 - 每名玩家;
 		双方;
-		全部;
+		斩仇;
 	}
 
 	条件
@@ -1172,14 +1199,13 @@
 
 	动作
 	{
-		"Hazard Ability 1 Reset Wall Climb"
-		If(事件玩家.toggle_invincible || (全局.EditorOn && 事件玩家 == 主机玩家) || !事件玩家.checkpoint_notLast);
-			设置启用技能 1(事件玩家, 真);
-		"$$ Doomfist & Vendetta Unlimit lvl"
+		等待直到 (!正在使用技能 2(事件玩家), 2);
+		If(事件玩家.toggle_invincible || !事件玩家.checkpoint_notLast);
+			设置启用技能 2(事件玩家, 真);
+		"$$ Vendetta Unlimit lvl"
+		Else If(数组包含(全局.UnlimitAbilities, 事件玩家.checkpoint_current));
 		Else;
-			等待直到 (!正在使用技能 2(事件玩家), 1);
-			If((相距距离(事件玩家, 最后(全局.A[事件玩家.checkpoint_current])) <= 1.8) && 在地面上(事件玩家));
-				调用子程序(ResetAbilities);
+			设置启用技能 2(事件玩家, 假);
 	}
 }
 
@@ -1200,45 +1226,18 @@
 
 	动作
 	{
-		If(事件玩家.toggle_invincible || (全局.EditorOn && 事件玩家 == 主机玩家) || !事件玩家.checkpoint_notLast);
+		If(事件玩家.toggle_invincible || !事件玩家.checkpoint_notLast);
 			设置启用终极技能(事件玩家, 真);
 			设置终极技能充能(事件玩家, 100);
 			等待(3.488, 当为“假”时中止);
 			如条件为“真”则循环;
 		Else;
-			等待直到 (!正在使用终极技能(事件玩家), 1.824);
-			"Disallow primary fire because of slash exploit"
-			禁用按钮(事件玩家, 按钮(主要攻击模式));
-			等待直到 (!正在使用终极技能(事件玩家), 1.664);
-			可用按钮(事件玩家, 按钮(主要攻击模式));
+			// 等待直到 (!正在使用终极技能(事件玩家), 1.824);
+			// "Disallow primary fire because of slash exploit"
+			// 等待直到 (!正在使用终极技能(事件玩家), 1.664);
+			等待直到 (!正在使用终极技能(事件玩家), 3.488);
 			If((相距距离(事件玩家, 最后(全局.A[事件玩家.checkpoint_current])) <= 1.8) && 在地面上(事件玩家));
 				调用子程序(ResetAbilities);
-	}
-}
-
-规则("Mechanic | Vendetta | Soaring Slice")
-{
-	事件
-	{
-		持续 - 每名玩家;
-		双方;
-		斩仇;
-	}
-
-	条件
-	{
-		正在使用技能 2(事件玩家) == 真;
-	}
-
-	动作
-	{
-		等待直到 (!正在使用技能 2(事件玩家), 2);
-		If(事件玩家.toggle_invincible || (全局.EditorOn && 事件玩家 == 主机玩家) || !事件玩家.checkpoint_notLast);
-			设置启用技能 2(事件玩家, 真);
-		"$$ Vendetta Unlimit lvl"
-		Else If(数组包含(全局.UnlimitAbilities, 事件玩家.checkpoint_current));
-		Else;
-			设置启用技能 2(事件玩家, 假);
 	}
 }
 
@@ -1253,7 +1252,7 @@
 
 	条件
 	{
-		(事件玩家.toggle_invincible || (全局.EditorOn && 事件玩家 == 主机玩家) || !事件玩家.checkpoint_notLast) == 真;
+		(事件玩家.toggle_invincible || !事件玩家.checkpoint_notLast || 在地面上(事件玩家)) == 真;
 		技能冷却时间(事件玩家, 按钮(技能1)) + 技能冷却时间(事件玩家, 按钮(技能2)) + 技能冷却时间(事件玩家, 按钮(辅助攻击模式)) + 技能冷却时间(事件玩家, 按钮(跳跃)) > 0.200;
 	}
 
@@ -1606,8 +1605,8 @@
 				全局.EditSelected) : (主机玩家.editor_modeSelect == 3 ? 
 
 				自定义字符串(
-				"\n 封禁(单关)\n――――――――――――\n {0} 卡小跳 ×\n {1} 留小跳进点 ↓\n{2}\n――――――――――――\n", 数组包含(全局.BanStand, 主机玩家.checkpoint_current) ? 自定义字符串("√")
-				: 空数组, 数组包含(全局.BanBhop, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组,自定义字符串(" {0} 死亡E ♂\n {1} 主要攻击 »",数组包含(全局.BanDead, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组, 数组包含(全局.BanPrimaryFire, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组))
+				"\n Skill Ban(Per CP)\n――――――――――――\n {0} Create Bhop ×\n {1} Save Bhop to Arrive ↓\n{2}\n――――――――――――\n", 数组包含(全局.BanStand, 主机玩家.checkpoint_current) ? 自定义字符串("√")
+				: 空数组, 数组包含(全局.BanBhop, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组,自定义字符串(" {0} Death to Save Ability2 ♂\n {1} Primary Fire »",数组包含(全局.BanDead, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组, 数组包含(全局.BanPrimaryFire, 主机玩家.checkpoint_current) ? 自定义字符串("√") : 空数组))
 
 				
 				: (主机玩家.editor_modeSelect == 4 && 数组包含(数组(主机玩家.checkpoint_current, -1), 全局.CustomPortalCP[全局.EditSelected]) && 数量(
@@ -2516,6 +2515,7 @@
 	条件
 	{
 		按钮被按下(事件玩家, 按钮(终极技能)) == 真;
+		按钮被按下(事件玩家, 按钮(技能2)) != 真;
 		全局.EditorOn == 假;
 		全局.CompMode == 假;
 	}
@@ -2534,7 +2534,7 @@
 	}
 }
 
-规则("Command | Preview Orbs & Portals (Hold Primary + Secondary)")
+规则("Command | Preview Orbs & Portals (Hold Primary + Secondary) (Invincible Mode Only)")
 {
 	事件
 	{
@@ -2548,6 +2548,7 @@
 		"@Condition EditorOn == false"
 		事件玩家.lockState == 假;
 		事件玩家.checkpoint_notLast != 假;
+		事件玩家.toggle_invincible == 真;
 		按钮被按下(事件玩家, 按钮(主要攻击模式)) == 真;
 		按钮被按下(事件玩家, 按钮(辅助攻击模式)) == 真;
 	}
@@ -2866,7 +2867,7 @@
 		数量(全局.A) > 真;
 		全局.EditorMoveItem == 假;
 		(事件玩家.editor_lock && 事件玩家 == 主机玩家) == 假;
-		(全局.EditorOn || 事件玩家.toggle_practice) == 真;
+		((全局.EditorOn && 事件玩家.toggle_guide) || 事件玩家.toggle_practice) == 真;
 		事件玩家.lockState == 事件玩家.checkpoint_skip;
 		按钮被按下(事件玩家, 按钮(蹲下)) == 真;
 		按钮被按下(事件玩家, 按钮(主要攻击模式)) != 按钮被按下(事件玩家, 按钮(辅助攻击模式));
@@ -3055,8 +3056,8 @@
 				"代码: {0}                                                                                                ", 全局.Code) : 自定义字符串(
 				"Map Code: {0}                                                                                                ", 全局.Code), 左边,
 				-199, 空, 空, 全局.ColorConfig[真], 可见和字符串, 默认可见度);
-			创建HUD文本(本地玩家.toggle_guide, 空, 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("长按 {0} + {1} | 预览关卡", 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(辅助攻击模式)))
-				: 自定义字符串("Hold {0} + {1} | Preview CP", 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(辅助攻击模式))), 右边, -160, 空, 空, 本地玩家.preview_array1 ? 单次赋值(
+			创建HUD文本(本地玩家.toggle_guide, 空, 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("长按 {0} + {1} | 预览关卡 (探点模式下)", 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(辅助攻击模式)))
+				: 自定义字符串("Hold {0} + {1} | Preview CP (In Invincible)", 输入绑定字符串(按钮(主要攻击模式)), 输入绑定字符串(按钮(辅助攻击模式))), 右边, -160, 空, 空, 本地玩家.preview_array1 ? 单次赋值(
 				全局.ColorConfig[6]) : 单次赋值(全局.ColorConfig[5]), 可见，字符串和颜色, 默认可见度);
 			创建HUD文本(首个(本地玩家.preview_array1 && 本地玩家.toggle_guide), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串(
 				"移动键 ◀ ▶ | 预览其他\n移动键 ◀ ▶ | 修改间距 \n视角移动 | 调整浏览视角") : 自定义字符串(
@@ -3123,7 +3124,7 @@
 			创建HUD文本((本地玩家.toggle_guide && (数量(全局.LeaderBoardFull) > 4) ? 本地玩家 : 空), 
 				英雄图标字符串(英雄(斩仇)), 
 				首个(全局.LeaderBoardFull[4]), 
-				最后(全局.LeaderBoardFull[5]), 
+				最后(全局.LeaderBoardFull[4]), 
 				右边, -136, 颜色(绿色), 颜色(绿色),颜色(绿色), 可见和字符串, 始终可见);
 			"leaderboard full"
 			创建HUD文本(本地玩家.toggle_leaderboard, 自定义字符串("　　　　 {0} {1} {0} 　　　　\n　　　　　　　　　　　　　　　　　　\n{2}",
@@ -3131,8 +3132,8 @@
 			白色), 空, 空, 可见和字符串, 默认可见度);
 		End;
 		"global huds"
-		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.3F{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
-			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.3F{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.3G{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.3G{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
 			"\nError: Max HUD Count Reached") : 空数组), 空, 右边, -162, 空, 全局.ColorConfig[2], 空, 可见和字符串, 始终可见);
 		"padding for custom hud display"
 		创建HUD文本(首个(真), 空, 空, 自定义字符串("­\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"), 顶部,
@@ -3199,7 +3200,8 @@
 				全局.ColorConfig[5]), 可见，字符串和颜色, 默认可见度);
 		End;
 		If(全局.maprating[0] && !全局.EditorOn);
-			创建HUD文本(本地玩家.toggle_guide, 空, 自定义字符串("\n评分: {0} | 评分人数: {1}", 全局.maprating[2] / 全局.maprating[1], 全局.maprating[1]), 自定义字符串(
+			创建HUD文本(本地玩家.toggle_guide, 空, (字符串("噢") == 自定义字符串("噢") ? 自定义字符串("\n评分: {0} | 评分人数: {1}", 全局.maprating[2] / 全局.maprating[1], 全局.maprating[1]) :
+			 自定义字符串("\nRating: {0} | Number: {1}", 全局.maprating[2] / 全局.maprating[1], 全局.maprating[1])), 自定义字符串(
 			"                                                                                                                                "),
 			左边, -191, 空,颜色(白色), 空, 可见和字符串, 默认可见度);
 		End;
@@ -3643,6 +3645,14 @@
 		Else;
 			停止镜头(事件玩家);
 		End;
+	}
+}
+
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Map Data & Addon Settings Are On Page 2 - 地图数据和附加组件的设置在第2页 ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+{
+	事件
+	{
+		持续 - 全局;
 	}
 }
 
