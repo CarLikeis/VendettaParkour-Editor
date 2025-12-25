@@ -2,7 +2,7 @@
 {
 	主程序
 	{
-		描述: "▶ 斩仇跑酷编辑器 v1.0.3G\r\n\r\n代码: J4GF6\r\n\r\n斩仇跑酷交流群：614016408"
+		描述: "▶ 斩仇跑酷编辑器 v1.0.3H\r\n\r\n代码: J4GF6\r\n\r\n斩仇跑酷交流群：614016408"
 		模式名称: "Vendetta Parkour - 斩仇跑酷"
 	}
 	大厅
@@ -226,7 +226,7 @@
 	}
 }
 
-规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.3G ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.3H ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
 {
 	事件
 	{
@@ -503,18 +503,18 @@
 				If(事件玩家.checkpoint_current == 数量(全局.A) - 真 && !全局.EditorOn);
 					停止追踪玩家变量(事件玩家, timer_normal);
 					调用子程序(LeaderboardUpdate);
-					If(全局.CompMode && 全局.CompAtmpNum);
-						If(事件玩家.comp_countAttempts == 全局.CompAtmpNum);
-							全局.CompAtmpSaveCount[数组值的索引(全局.CompAtmpSaveNames, 字符串分割(首个(事件玩家), 空数组))] = -1;
-							事件玩家.comp_countAttempts = -1;
-							事件玩家.toggle_leaderboard = 真;
-							设置受到伤害(事件玩家, 100);
-							击杀(事件玩家, 空);
-							设置受到伤害(事件玩家, 0);
-						Else;
-							全局.CompAtmpSaveCount[数组值的索引(全局.CompAtmpSaveNames, 字符串分割(首个(事件玩家), 空数组))] = 事件玩家.comp_countAttempts + 真;
-						End;
-					End;
+					// If(全局.CompMode && 全局.CompAtmpNum);
+					// 	If(事件玩家.comp_countAttempts == 全局.CompAtmpNum);
+					// 		全局.CompAtmpSaveCount[数组值的索引(全局.CompAtmpSaveNames, 字符串分割(首个(事件玩家), 空数组))] = -1;
+					// 		事件玩家.comp_countAttempts = -1;
+					// 		事件玩家.toggle_leaderboard = 真;
+					// 		设置受到伤害(事件玩家, 100);
+					// 		击杀(事件玩家, 空);
+					// 		设置受到伤害(事件玩家, 0);
+					// 	Else;
+					// 		全局.CompAtmpSaveCount[数组值的索引(全局.CompAtmpSaveNames, 字符串分割(首个(事件玩家), 空数组))] = 事件玩家.comp_countAttempts + 真;
+					// 	End;
+					// End;
 					大字体信息(首个(真), 自定义字符串("{0} {1} {2} sec", 事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("恭喜！已通关! 用时") : 自定义字符串("Mission complete! Time"),
 						事件玩家.timer_normal));
 					If(!数组包含(全局.maprating[3], 首个(事件玩家)) && 全局.maprating);
@@ -578,12 +578,12 @@
 
 	动作
 	{
-		根据条件跳过(事件玩家.skill_usingshift, 5);
-		调用子程序(ResetAbilities);
-		事件玩家.cache_collectedLocks = 空数组;
+		根据条件跳过(事件玩家.skill_usingshift, 4);
+		// 调用子程序(ResetAbilities);
 		If((相距距离(事件玩家, 最后(全局.A[事件玩家.checkpoint_current])) > 1.8) && !(事件玩家.toggle_invincible || 事件玩家.toggle_spectate));
 			调用子程序(CheckpointFailReset);
 		End;
+		事件玩家.cache_collectedLocks = 空数组;
 		等待(0.048, 无视条件);
 		如条件为“真”则循环;
 	}
@@ -1254,6 +1254,7 @@
 	{
 		(事件玩家.toggle_invincible || !事件玩家.checkpoint_notLast || 在地面上(事件玩家)) == 真;
 		技能冷却时间(事件玩家, 按钮(技能1)) + 技能冷却时间(事件玩家, 按钮(技能2)) + 技能冷却时间(事件玩家, 按钮(辅助攻击模式)) + 技能冷却时间(事件玩家, 按钮(跳跃)) > 0.200;
+		事件玩家.editor_lock != 真;
 	}
 
 	动作
@@ -3132,8 +3133,8 @@
 			白色), 空, 空, 可见和字符串, 默认可见度);
 		End;
 		"global huds"
-		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.3G{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
-			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.3G{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.3H{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.3H{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
 			"\nError: Max HUD Count Reached") : 空数组), 空, 右边, -162, 空, 全局.ColorConfig[2], 空, 可见和字符串, 始终可见);
 		"padding for custom hud display"
 		创建HUD文本(首个(真), 空, 空, 自定义字符串("­\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"), 顶部,
