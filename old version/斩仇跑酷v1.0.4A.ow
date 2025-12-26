@@ -1113,12 +1113,11 @@
 
 	动作
 	{
-		If(事件玩家.toggle_invincible || (事件玩家 == 主机玩家 && 全局.EditorOn));
+		If(事件玩家.toggle_invincible);
 			设置启用终极技能(事件玩家, 真);
 			设置启用技能 1(事件玩家, 真);
 			设置启用技能 2(事件玩家, 真);
-			设置辅助攻击模式启用(事件玩家, 真);
-			设置启用近战攻击(事件玩家, 真);
+			设置主要攻击模式启用(事件玩家, 真);
 		Else;
 			设置启用终极技能(事件玩家, 事件玩家.cache_startUlt);
 			设置启用技能 1(事件玩家, 事件玩家.cache_startAbility1);
@@ -1937,6 +1936,7 @@
 			全局.EditMode = 已过滤的数组(全局.EditMode, !数组包含(主机玩家.editor_temp, 当前数组索引));
 			全局.TQ5 = 已过滤的数组(全局.TQ5, !数组包含(主机玩家.editor_temp, 当前数组索引));
 			全局.TQ6 = 已过滤的数组(全局.TQ6, !数组包含(主机玩家.editor_temp, 当前数组索引));
+			等待(0.016, 无视条件);
 			全局.TQ7 = 已过滤的数组(全局.TQ7, !数组包含(主机玩家.editor_temp, 当前数组索引));
 			全局.BounceToggleLock = 已过滤的数组(全局.BounceToggleLock, !数组包含(主机玩家.editor_temp, 当前数组索引));
 			"Resync custom portals =================="
@@ -2715,6 +2715,7 @@
 				调用子程序(TimerResume);
 			End;
 			调用子程序(CheckpointFailReset);
+			设置主要攻击模式启用(事件玩家, !事件玩家.ban_primaryfire);
 		Else;
 			事件玩家.toggle_invincible = 假;
 			调用子程序(TimerPause);
@@ -2722,6 +2723,7 @@
 			设置受到伤害(事件玩家, 100);
 			击杀(事件玩家, 空);
 			设置受到伤害(事件玩家, 0);
+			设置主要攻击模式启用(事件玩家, 真);
 			小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   再次长按互动键关闭观战模式") : 自定义字符串("   Hold Interact Again To Turn Off Spectate Mode"));
 		End;
 		事件玩家.toggle_spectate = !事件玩家.toggle_spectate;
