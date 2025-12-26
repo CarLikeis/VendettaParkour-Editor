@@ -2,7 +2,7 @@
 {
 	主程序
 	{
-		描述: "▶ 斩仇跑酷编辑器 v1.0.3H\r\n\r\n代码: J4GF6\r\n\r\n斩仇跑酷交流群：614016408"
+		描述: "▶ 斩仇跑酷编辑器 v1.0.4A\r\n\r\n代码: J4GF6\r\n\r\n斩仇跑酷交流群：614016408"
 		模式名称: "Vendetta Parkour - 斩仇跑酷"
 	}
 	大厅
@@ -171,7 +171,7 @@
 		42: cache_killPosition
 		43: cache_killRadii
 		44: cache_bouncePosition
-		45: cache_inputs
+		// 45: cache_inputs
 		47: cache_titleHud
 		48: preview_array1
 		49: preview_array2
@@ -226,7 +226,7 @@
 	}
 }
 
-规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.3H ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.4A ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
 {
 	事件
 	{
@@ -574,16 +574,15 @@
 		在地面上(事件玩家) == 真;
 		存活(事件玩家) == 真;
 		事件玩家.checkpoint_notLast != 假;
+		事件玩家.skill_usingshift != 真;
 	}
 
 	动作
 	{
-		根据条件跳过(事件玩家.skill_usingshift, 4);
-		// 调用子程序(ResetAbilities);
+		事件玩家.cache_collectedLocks = 空数组;
 		If((相距距离(事件玩家, 最后(全局.A[事件玩家.checkpoint_current])) > 1.8) && !(事件玩家.toggle_invincible || 事件玩家.toggle_spectate));
 			调用子程序(CheckpointFailReset);
 		End;
-		事件玩家.cache_collectedLocks = 空数组;
 		等待(0.048, 无视条件);
 		如条件为“真”则循环;
 	}
@@ -604,6 +603,7 @@
 		事件玩家.toggle_invincible == 假;
 		事件玩家.checkpoint_notLast != 假;
 		对任意为“真”(事件玩家.cache_killRadii, 归一化(当前数组元素) * 相距距离(事件玩家.cache_killPosition[当前数组索引], 事件玩家) < 当前数组元素) == 真;
+		事件玩家.editor_lock != 真;
 	}
 
 	动作
@@ -728,11 +728,13 @@
 		事件玩家.cache_bouncePosition = 已过滤的数组(全局.TQ, 全局.pinballnumber[当前数组索引] == 事件玩家.checkpoint_current);
 		事件玩家.cache_bounceMaxLocks = 数量(已过滤的数组(全局.BounceToggleLock, 全局.pinballnumber[当前数组索引] == 事件玩家.checkpoint_current && 当前数组元素));
 		事件玩家.cache_killPosition = 已过滤的数组(全局.H, 全局.killballnumber[当前数组索引] == 事件玩家.checkpoint_current);
+		等待(0.016, 无视条件);
 		事件玩家.cache_killRadii = 已过滤的数组(全局.I, 全局.killballnumber[当前数组索引] == 事件玩家.checkpoint_current);
 		事件玩家.cache_portalStart = 已过滤的数组(全局.CustomPortalStart,
 			全局.CustomPortalCP[当前数组索引] == 事件玩家.checkpoint_current || 全局.CustomPortalCP[当前数组索引] < 空);
 		事件玩家.cache_portalEnd = 已过滤的数组(全局.CustomPortalEndpoint,
 			全局.CustomPortalCP[当前数组索引] == 事件玩家.checkpoint_current || 全局.CustomPortalCP[当前数组索引] < 空);
+		等待(0.016, 无视条件);
 		事件玩家.checkpoint_notLast = 事件玩家.checkpoint_current < 数量(全局.A) - 真 && 数量(全局.A) > 1;
 		事件玩家.cache_startUlt = 数组包含(全局.Dao, 事件玩家.checkpoint_current) || !事件玩家.checkpoint_notLast;
 		事件玩家.cache_startAbility1 = 数组包含(全局.SHIFT, 事件玩家.checkpoint_current) || !事件玩家.checkpoint_notLast;
@@ -781,6 +783,7 @@
 			可见，位置和半径);
 		修改玩家变量(主机玩家, editor_hitboxEffect, 添加至数组, 最后创建的实体);
 		主机玩家.editor_bounceIndex = 已过滤的数组(映射的数组(全局.pinballnumber, 当前数组元素 == 主机玩家.checkpoint_current ? 当前数组索引 : -1), 当前数组元素 >= 空);
+		等待(0.016, 无视条件);
 		主机玩家.editor_killIndex = 已过滤的数组(映射的数组(全局.killballnumber, 当前数组元素 == 主机玩家.checkpoint_current ? 当前数组索引 : -1), 当前数组元素 >= 空);
 		If(主机玩家.checkpoint_moved);
 			全局.EditSelected = 最后(全局.EditSelectIdArray);
@@ -1261,11 +1264,8 @@
 	{
 		设置技能冷却(事件玩家, 按钮(技能1), 0);
 		设置技能冷却(事件玩家, 按钮(技能2), 0);
-		等待(0.048, 无视条件);
-		如条件为“真”则循环;
 	}
 }
-
 规则("Mechanic | Ban / Cancle Ability 1 of Vendetta")
 {
 	事件
@@ -1681,7 +1681,7 @@
 				事件玩家.editor_fly += (0.003 + 0.093 * 按钮被按下(事件玩家, 按钮(主要攻击模式))) * (面朝方向(事件玩家) * Z方向分量(阈值(事件玩家)) + 地图矢量(阈值(事件玩家) * 左, 事件玩家, 旋转) + 上 * (
 					按钮被按下(事件玩家, 按钮(跳跃)) - 按钮被按下(事件玩家, 按钮(蹲下))));
 			End;
-			等待(假, 无视条件);
+			等待(0.016, 无视条件);
 		End;
 		可用按钮(事件玩家, 按钮(终极技能));
 		设置启用技能 2(主机玩家, 真);
@@ -1789,18 +1789,23 @@
 					修改全局变量(A, 添加至数组, 所选位置(主机玩家));
 					全局.A = 映射的数组(全局.A, 当前数组索引 < 主机玩家.checkpoint_current + 真 ? 当前数组元素 : (当前数组索引 == 主机玩家.checkpoint_current + 真 ? 最后(全局.A)
 						: 全局.A[当前数组索引 - 真]));
+					等待(0.016, 无视条件);
 					主机玩家.checkpoint_current += 真;
 					全局.killballnumber = 映射的数组(全局.killballnumber, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.pinballnumber = 映射的数组(全局.pinballnumber, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+					等待(0.016, 无视条件);
 					全局.CustomPortalCP = 映射的数组(全局.CustomPortalCP, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.Dao = 映射的数组(全局.Dao, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.SHIFT = 映射的数组(全局.SHIFT, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+					等待(0.016, 无视条件);
 					全局.Ability2 = 映射的数组(全局.Ability2, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.UnlimitAbilities = 映射的数组(全局.UnlimitAbilities, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+					等待(0.016, 无视条件);
 					全局.BanPrimaryFire = 映射的数组(全局.BanPrimaryFire, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.BanDead = 映射的数组(全局.BanDead, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.BanStand = 映射的数组(全局.BanStand, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 					全局.BanBhop = 映射的数组(全局.BanBhop, 当前数组元素 + (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+					等待(0.016, 无视条件);
 				End;
 				调用子程序(UpdateCache);
 				调用子程序(CheckpointFailReset);
@@ -1905,13 +1910,15 @@
 			For 全局变量(NANBA, 0, 数量(主机玩家.editor_temp), 真);
 				消除效果(全局.K[主机玩家.editor_temp[全局.NANBA]]);
 				修改全局变量(K, 根据索引从数组中移除, 主机玩家.editor_temp[全局.NANBA]);
-				等待(假, 无视条件);
+				等待(0.016, 无视条件);
 			End;
 			修改全局变量(killballnumber, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			"Decrement checkpoints after removed one"
 			全局.killballnumber = 映射的数组(全局.killballnumber, 当前数组元素 - (当前数组元素 > 主机玩家.checkpoint_current ? 1 : 空));
+			等待(0.016, 无视条件);
 			"Remove Radii at Checkpoint indexes (temp)"
 			全局.I = 已过滤的数组(全局.I, !数组包含(主机玩家.editor_temp, 当前数组索引));
+			等待(0.016, 无视条件);
 			全局.H = 已过滤的数组(全局.H, !数组包含(主机玩家.editor_temp, 当前数组索引));
 			"Resync Bounce Orbs =============="
 			主机玩家.editor_temp = 已过滤的数组(映射的数组(全局.pinballnumber, 当前数组元素 == 主机玩家.checkpoint_current ? 当前数组索引 : -1), 当前数组元素 >= 空);
@@ -1919,12 +1926,14 @@
 			For 全局变量(NANBA, 0, 数量(主机玩家.editor_temp), 真);
 				消除效果(全局.TQ2[主机玩家.editor_temp[全局.NANBA]]);
 				修改全局变量(TQ2, 根据索引从数组中移除, 主机玩家.editor_temp[全局.NANBA]);
-				等待(假, 无视条件);
+				等待(0.016, 无视条件);
 			End;
 			修改全局变量(pinballnumber, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			"Decrement checkpoints after removed one"
 			全局.pinballnumber = 映射的数组(全局.pinballnumber, 当前数组元素 - (当前数组元素 > 主机玩家.checkpoint_current ? 1 : 空));
+			等待(0.016, 无视条件);
 			全局.TQ = 已过滤的数组(全局.TQ, !数组包含(主机玩家.editor_temp, 当前数组索引));
+			等待(0.016, 无视条件);
 			全局.EditMode = 已过滤的数组(全局.EditMode, !数组包含(主机玩家.editor_temp, 当前数组索引));
 			全局.TQ5 = 已过滤的数组(全局.TQ5, !数组包含(主机玩家.editor_temp, 当前数组索引));
 			全局.TQ6 = 已过滤的数组(全局.TQ6, !数组包含(主机玩家.editor_temp, 当前数组索引));
@@ -1935,34 +1944,38 @@
 			For 全局变量(NANBA, 0, 数量(主机玩家.editor_temp), 真);
 				消除效果(全局.PortalEffects[主机玩家.editor_temp[全局.NANBA]]);
 				修改全局变量(PortalEffects, 根据索引从数组中移除, 主机玩家.editor_temp[全局.NANBA]);
-				等待(假, 无视条件);
+				等待(0.016, 无视条件);
 			End;
 			修改全局变量(CustomPortalCP, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			"Decrement checkpoints after removed one"
 			全局.CustomPortalCP = 映射的数组(全局.CustomPortalCP, 当前数组元素 - (当前数组元素 > 主机玩家.checkpoint_current ? 1 : 空));
+			等待(0.016, 无视条件);
 			"Remove Radii at Checkpoint indexes (temp)"
 			全局.CustomPortalStart = 已过滤的数组(全局.CustomPortalStart, !数组包含(主机玩家.editor_temp, 当前数组索引));
+			等待(0.016, 无视条件);
 			全局.CustomPortalEndpoint = 已过滤的数组(全局.CustomPortalEndpoint, !数组包含(主机玩家.editor_temp, 当前数组索引));
 			主机玩家.editor_temp = 空;
 			修改全局变量(Dao, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.Dao = 映射的数组(全局.Dao, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+			等待(0.016, 无视条件);
 			修改全局变量(SHIFT, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.SHIFT = 映射的数组(全局.SHIFT, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+			等待(0.016, 无视条件);
 			修改全局变量(Ability2, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.Ability2 = 映射的数组(全局.Ability2, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
 			修改全局变量(UnlimitAbilities, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.UnlimitAbilities = 映射的数组(全局.UnlimitAbilities, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+			等待(0.016, 无视条件);
 			修改全局变量(BanPrimaryFire, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.BanPrimaryFire = 映射的数组(全局.BanPrimaryFire, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
-
 			修改全局变量(BanStand, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.BanStand = 映射的数组(全局.BanStand, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
-
+			等待(0.016, 无视条件);
 			修改全局变量(BanBhop, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.BanBhop = 映射的数组(全局.BanBhop, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
-
 			修改全局变量(BanDead, 根据值从数组中移除, 主机玩家.checkpoint_current);
 			全局.BanDead = 映射的数组(全局.BanDead, 当前数组元素 - (当前数组元素 >= 主机玩家.checkpoint_current ? 1 : 空));
+			等待(0.016, 无视条件);
 
 			修改全局变量(A, 根据索引从数组中移除, 主机玩家.checkpoint_current);
 			主机玩家.checkpoint_current = 较大(主机玩家.checkpoint_current - 真, 假);
@@ -1990,7 +2003,7 @@
 			调用子程序(RebuildBounceOrbs);
 		Else If(主机玩家.editor_modeSelect == 4 && 数量(全局.EditSelectIdArray));
 			消除效果(全局.PortalEffects[全局.EditSelected]);
-			等待(假, 无视条件);
+			等待(0.016, 无视条件);
 			修改全局变量(CustomPortalStart, 根据索引从数组中移除, 全局.EditSelected);
 			修改全局变量(CustomPortalEndpoint, 根据索引从数组中移除, 全局.EditSelected);
 			修改全局变量(CustomPortalCP, 根据索引从数组中移除, 全局.EditSelected);
@@ -1998,7 +2011,7 @@
 			调用子程序(RebuildPortals);
 		Else;
 			主机玩家.editor_lock = 假;
-			等待(假, 无视条件);
+			等待(0.016, 无视条件);
 			中止;
 		End;
 		调用子程序(UpdateCache);
@@ -2228,7 +2241,7 @@
 			Else;
 				全局.A[主机玩家.checkpoint_current] = 所选位置(主机玩家);
 			End;
-			等待(假, 无视条件);
+			等待(0.016, 无视条件);
 		End;
 		停止镜头(主机玩家);
 		设置移动速度(主机玩家, 100);
@@ -2415,7 +2428,7 @@
 			While(!(按钮被按下(主机玩家, 按钮(主要攻击模式)) || 按钮被按下(主机玩家, 按钮(辅助攻击模式))));
 				全局.H[全局.EditSelected] += (0.096 + 0.192 * 按钮被按下(事件玩家, 按钮(跳跃)) - 0.048 * 按钮被按下(事件玩家, 按钮(蹲下))) * (面朝方向(事件玩家) * Z方向分量(阈值(事件玩家)) * 矢量(
 					真, !按钮被按下(事件玩家, 按钮(技能1)), 真) + 地图矢量(阈值(事件玩家) * 左, 事件玩家, 旋转) + 上 * (按钮被按下(事件玩家, 按钮(技能2)) - 按钮被按下(事件玩家, 按钮(终极技能))));
-				等待(假, 无视条件);
+				等待(0.016, 无视条件);
 			End;
 		Else If(主机玩家.editor_modeSelect == 2);
 			主机玩家.editor_undo = 全局.TQ[全局.EditSelected];
@@ -2423,7 +2436,7 @@
 			While(!(按钮被按下(主机玩家, 按钮(主要攻击模式)) || 按钮被按下(主机玩家, 按钮(辅助攻击模式))));
 				全局.TQ[全局.EditSelected] += (0.096 + 0.192 * 按钮被按下(事件玩家, 按钮(跳跃)) - 0.048 * 按钮被按下(事件玩家, 按钮(蹲下))) * (面朝方向(事件玩家) * Z方向分量(阈值(事件玩家)) * 矢量(
 					真, !按钮被按下(事件玩家, 按钮(技能1)), 真) + 地图矢量(阈值(事件玩家) * 左, 事件玩家, 旋转) + 上 * (按钮被按下(事件玩家, 按钮(技能2)) - 按钮被按下(事件玩家, 按钮(终极技能))));
-				等待(假, 无视条件);
+				等待(0.016, 无视条件);
 			End;
 		Else If(主机玩家.editor_modeSelect == 4);
 			主机玩家.editor_undo = 数组(全局.CustomPortalStart[全局.EditSelected], 全局.CustomPortalEndpoint[全局.EditSelected]);
@@ -2433,7 +2446,7 @@
 				全局.CustomPortalStart[全局.EditSelected] += (0.096 + 0.192 * 按钮被按下(事件玩家, 按钮(跳跃)) - 0.048 * 按钮被按下(事件玩家, 按钮(蹲下))) * (面朝方向(事件玩家) * Z方向分量(
 					阈值(事件玩家)) * 矢量(真, !按钮被按下(事件玩家, 按钮(技能1)), 真) + 地图矢量(阈值(事件玩家) * 左, 事件玩家, 旋转) + 上 * (按钮被按下(事件玩家, 按钮(技能2)) - 按钮被按下(事件玩家, 按钮(
 					终极技能))));
-				等待(假, 无视条件);
+				等待(0.016, 无视条件);
 			End;
 			"move destination"
 			开始镜头(主机玩家, 全局.CustomPortalEndpoint[全局.EditSelected] + 面朝方向(主机玩家) * -4, 全局.CustomPortalEndpoint[全局.EditSelected], 30);
@@ -2442,7 +2455,7 @@
 				全局.CustomPortalEndpoint[全局.EditSelected] += (0.096 + 0.192 * 按钮被按下(事件玩家, 按钮(跳跃)) - 0.048 * 按钮被按下(事件玩家, 按钮(蹲下))) * (面朝方向(事件玩家)
 					* Z方向分量(阈值(事件玩家)) * 矢量(真, !按钮被按下(事件玩家, 按钮(技能1)), 真) + 地图矢量(阈值(事件玩家) * 左, 事件玩家, 旋转) + 上 * (按钮被按下(事件玩家, 按钮(技能2)) - 按钮被按下(事件玩家,
 					按钮(终极技能))));
-				等待(假, 无视条件);
+				等待(0.016, 无视条件);
 			End;
 		End;
 		If(按钮被按下(主机玩家, 按钮(辅助攻击模式)));
@@ -3133,8 +3146,8 @@
 			白色), 空, 空, 可见和字符串, 默认可见度);
 		End;
 		"global huds"
-		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.3H{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
-			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.3H{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.4A{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.4A{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
 			"\nError: Max HUD Count Reached") : 空数组), 空, 右边, -162, 空, 全局.ColorConfig[2], 空, 可见和字符串, 始终可见);
 		"padding for custom hud display"
 		创建HUD文本(首个(真), 空, 空, 自定义字符串("­\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"), 顶部,
@@ -3243,11 +3256,11 @@
 			数量(全局.A) - 真)), 事件玩家.cache_bounceMaxLocks && !事件玩家.preview_array1 ? 自定义字符串("{0}{1} {2}", 全局.ColorConfig[16], 字符串("噢")
 			== 自定义字符串("噢") ? 自定义字符串("球") : 自定义字符串(" Orbs"), 自定义字符串("{0} / {1}", 数量(事件玩家.cache_collectedLocks), 事件玩家.cache_bounceMaxLocks))
 			: 空数组, 顶部, -172, 全局.ColorConfig[4], 全局.ColorConfig[4], 全局.ColorConfig[16], 可见和字符串, 默认可见度);
-		创建HUD文本(事件玩家, 空, 空, 自定义字符串("{0}{1}{2}", X方向分量(事件玩家.cache_inputs) ? 自定义字符串("■") : 自定义字符串("□"), Z方向分量(阈值(事件玩家)) > 空 ? 自定义字符串("▲")
-			: 自定义字符串("△"), 自定义字符串("{0}\n{1}{2}", Y方向分量(事件玩家.cache_inputs) ? 自定义字符串("●") : 自定义字符串("○"), X方向分量(阈值(事件玩家)) > 空 ? 自定义字符串("◀")
-			: 自定义字符串("◁"), 自定义字符串("{0}{1}                                                                                                ",
-			Z方向分量(阈值(事件玩家)) < 空 ? 自定义字符串("▼") : 自定义字符串("∇"), X方向分量(阈值(事件玩家)) < 空 ? 自定义字符串("▶") : 自定义字符串("▷")))), 左边, -192, 空, 空, 单次赋值(
-			全局.ColorConfig[3]), 字符串, 默认可见度);
+		// 创建HUD文本(事件玩家, 空, 空, 自定义字符串("{0}{1}{2}", X方向分量(事件玩家.cache_inputs) ? 自定义字符串("■") : 自定义字符串("□"), Z方向分量(阈值(事件玩家)) > 空 ? 自定义字符串("▲")
+		// 	: 自定义字符串("△"), 自定义字符串("{0}\n{1}{2}", Y方向分量(事件玩家.cache_inputs) ? 自定义字符串("●") : 自定义字符串("○"), X方向分量(阈值(事件玩家)) > 空 ? 自定义字符串("◀")
+		// 	: 自定义字符串("◁"), 自定义字符串("{0}{1}                                                                                                ",
+		// 	Z方向分量(阈值(事件玩家)) < 空 ? 自定义字符串("▼") : 自定义字符串("∇"), X方向分量(阈值(事件玩家)) < 空 ? 自定义字符串("▶") : 自定义字符串("▷")))), 左边, -192, 空, 空, 单次赋值(
+		// 	全局.ColorConfig[3]), 字符串, 默认可见度);
 		"climb/bhop indicators"
 
 		创建HUD文本(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 
@@ -3613,22 +3626,22 @@
 	}
 }
 
-规则("Addon | Caching Jump & Crouch Inputs For Spectators")
-{
-	事件
-	{
-		玩家加入比赛;
-		双方;
-		全部;
-	}
+// 规则("Addon | Caching Jump & Crouch Inputs For Spectators")
+// {
+// 	事件
+// 	{
+// 		玩家加入比赛;
+// 		双方;
+// 		全部;
+// 	}
 
-	动作
-	{
-		等待(假, 无视条件);
-		事件玩家.cache_inputs = 矢量(按钮被按下(事件玩家, 按钮(跳跃)), 按钮被按下(事件玩家, 按钮(蹲下)), 假);
-		循环;
-	}
-}
+// 	动作
+// 	{
+// 		等待(0.032, 无视条件);
+// 		事件玩家.cache_inputs = 矢量(按钮被按下(事件玩家, 按钮(跳跃)), 按钮被按下(事件玩家, 按钮(蹲下)), 假);
+// 		循环;
+// 	}
+// }
 
 规则("Addon | SUB 3rd Person Camera")
 {
@@ -3646,6 +3659,14 @@
 		Else;
 			停止镜头(事件玩家);
 		End;
+	}
+}
+
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Map Data & Addon Settings Are On Page 2 - 地图数据和附加组件的设置在第2页 ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+{
+	事件
+	{
+		持续 - 全局;
 	}
 }
 
