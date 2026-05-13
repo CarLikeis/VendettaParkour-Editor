@@ -2,7 +2,7 @@
 {
 	主程序
 	{
-		描述: "▶ 斩仇跑酷编辑器 v1.0.4E\r\n\r\n代码: J4GF6\r\n\r\n斩仇跑酷交流群：614016408"
+		描述: "▶ 斩仇跑酷编辑器 v1.0.4F\r\n\r\n代码: J4GF6\r\n\r\n斩仇跑酷交流群：614016408"
 		模式名称: "Vendetta Parkour - 斩仇跑酷"
 	}
 	大厅
@@ -190,6 +190,7 @@
 		62: comp_instructionHud
 		63: addon_toggle3rdPov
 		64: maprating
+		65: TempCheckpoint
 		100: cache_startAbility2
 }
 
@@ -226,7 +227,7 @@
 	}
 }
 
-规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.4E ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
+规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Parkour v1.0.4F ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
 {
 	事件
 	{
@@ -924,7 +925,11 @@
 				等待(假, 无视条件);
 				停止强制设置玩家位置(事件玩家);
 			End;
-			传送(事件玩家, 最后(全局.A[事件玩家.checkpoint_current]));
+			If(!事件玩家.toggle_invincible);
+				传送(事件玩家, 最后(全局.A[事件玩家.checkpoint_current]));
+			Else;
+				传送(事件玩家, 事件玩家.TempCheckpoint);
+			End;
 			"After teleport incase stopForcingPosition launches the player"
 			施加推力(事件玩家, -1 * 速率(事件玩家), 1, 至地图, 取消相反运动XYZ);
 			"old: disallow jump > 0.1 sec wait > allow jump, this method bugs with ult check disabling ultimate for some reason\nif eventPlayer.ban_dead or eventPlayer.ban_emote and eventPlayer.isHoldingButton(Button.JUMP):Reset Hop"
@@ -2767,6 +2772,8 @@
 			调用子程序(TimerPause);
 			停止追踪玩家变量(事件玩家, timer_practice);
 			调用子程序(ResetAbilities);
+			小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   蹲 + 互动 + 近战 新建临时检查点") : 自定义字符串("   Press Crouch + Interact + Melee Create Temp CP"));
+			事件玩家.TempCheckpoint = 全局.A[事件玩家.checkpoint_current];
 		Else;
 			If(正在使用技能 2(事件玩家));
 				开始强制设置玩家位置(事件玩家, 全局.A[事件玩家.checkpoint_current], 假);
@@ -2955,6 +2962,35 @@
 		播放效果(事件玩家, 正面状态施加声音, 空, 事件玩家, 100);
 		大字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? (事件玩家.toggle_quickRestart ? 自定义字符串("快速回点已启用") : 自定义字符串("快速回点已关闭")) : (
 			事件玩家.toggle_quickRestart ? 自定义字符串("Quick Reset Is Enabled") : 自定义字符串("Quick Reset Is Disabled")));
+	}
+}
+
+规则("Command | Temp Quick Reset Point (Press Crouch + Interact + Melee)")
+{
+	事件
+	{
+		持续 - 每名玩家;
+		双方;
+		全部;
+	}
+
+	条件
+	{
+		全局.EditorOn == 假;
+		事件玩家.toggle_invincible == 真;
+		按钮被按下(事件玩家, 按钮(近身攻击)) == 真;
+		按钮被按下(事件玩家, 按钮(主要攻击模式)) == 假;
+		按钮被按下(事件玩家, 按钮(装填)) == 假;
+		按钮被按下(事件玩家, 按钮(蹲下)) == 真;
+		按钮被按下(事件玩家, 按钮(互动)) == 真;
+	}
+
+	动作
+	{
+		等待(0.16, 当为“假”时中止);
+		事件玩家.TempCheckpoint = 所选位置(事件玩家);
+		小字体信息(事件玩家, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("   临时检查点已创建 !") : 自定义字符串("   Temp Checkpoint has been Created !"));
+		播放效果(事件玩家, 正面状态施加声音, 空, 事件玩家, 100);
 	}
 }
 
@@ -3158,8 +3194,8 @@
 			白色), 空, 空, 可见和字符串, 默认可见度);
 		End;
 		"global huds"
-		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.4E{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
-			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.4E{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+		创建HUD文本(首个(真), 空, 字符串("噢") == 自定义字符串("噢") ? 自定义字符串("房间将在 {0} 分钟后重启 - v1.0.4F{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
+			"\n错误: 已达到最大HUD数量上限") : 空数组) : 自定义字符串("Server Restart In {0} Min - v1.0.4F{1}", 全局.TimeRemaining, 文本数量 >= 128 ? 自定义字符串(
 			"\nError: Max HUD Count Reached") : 空数组), 空, 右边, -162, 空, 全局.ColorConfig[2], 空, 可见和字符串, 始终可见);
 		"padding for custom hud display"
 		创建HUD文本(首个(真), 空, 空, 自定义字符串("­\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"), 顶部,
@@ -3668,14 +3704,6 @@
 		Else;
 			停止镜头(事件玩家);
 		End;
-	}
-}
-
-规则("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒ Map Data & Addon Settings Are On Page 2 - 地图数据和附加组件的设置在第2页 ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒")
-{
-	事件
-	{
-		持续 - 全局;
 	}
 }
 
